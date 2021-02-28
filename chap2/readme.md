@@ -27,7 +27,7 @@ the entire array A[1..A.length] has no element v, so returns NIL.
 Consider sorting n numbers stored in array A by first finding the smallest element \
 of A and exchanging it with the element in A[1]. Then find the second smallest
 element of A, and exchange it with A[2]. \
-Continue in this manner for the first n1
+Continue in this manner for the first n - 1
 elements of A. \
 Write pseudocode for this algorithm, which is known as selection
 sort.
