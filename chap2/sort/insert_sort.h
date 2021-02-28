@@ -1,7 +1,7 @@
 #include <vector>
 
 // pseudocode at p.41
-void insertSort(std::vector<int>& a) {
+void InsertSort(std::vector<int>& a) {
   for (size_t j = 1; j < a.size(); ++j) {
     int key = a[j];
     int i = j - 1;
@@ -12,3 +12,6 @@ void insertSort(std::vector<int>& a) {
     a[i + 1] = key;
   }
 }
+
+// best case: n
+// worst case: n-squared
