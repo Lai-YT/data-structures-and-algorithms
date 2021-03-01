@@ -1,4 +1,7 @@
 **/bin/
+**/obj/
+
+makefile
 
 # vs code
 **/.vs
