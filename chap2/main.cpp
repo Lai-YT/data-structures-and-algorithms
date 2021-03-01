@@ -52,6 +52,7 @@ int main(int argc, char const *argv[]) {
       std::cout << n << ' ';
     }
     std::cout << '\n';
+    
   } // end
 
   { // merge sort test space
@@ -59,7 +60,7 @@ int main(int argc, char const *argv[]) {
     // ---- case 1 ----
 
     std::vector<int> a = {31, 41, 59, 26, 41, 58};
-    MergeSort(a, 0, a.size());
+    MergeSort(a, 0, a.size() - 1);
 
     std::cout << "merge sort: ";
     for (int n : a) {
@@ -77,6 +78,7 @@ int main(int argc, char const *argv[]) {
       std::cout << n << ' ';
     }
     std::cout << '\n';
+
   } // end
 
   return 0;
