@@ -4,7 +4,6 @@
 #include "../sort/select_sort.h"
 
 #include <algorithm>
-#include <cstdlib>
 #include <vector>
 
 #include "../util/random.h"

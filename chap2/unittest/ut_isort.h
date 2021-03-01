@@ -4,7 +4,6 @@
 #include "../sort/insert_sort.h"
 
 #include <algorithm>
-#include <cstdlib>
 #include <vector>
 
 #include "../util/random.h"
