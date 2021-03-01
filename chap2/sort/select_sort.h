@@ -1,7 +1,10 @@
 #include <algorithm>
 #include <vector>
 
-// Exercise at p.50
+// best case: n-squared
+// worst case: n-squared
+// Exercise at p.29
+
 void SelectSort(std::vector<int>& a) {
   int n = a.size();
   for (size_t j = 0; j < n - 1; ++j) {
@@ -14,6 +17,3 @@ void SelectSort(std::vector<int>& a) {
     std::swap(a[j], a[min]);
   }
 }
-
-// best case: n-squared
-// worst case: n-squared

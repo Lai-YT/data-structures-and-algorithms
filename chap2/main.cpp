@@ -4,7 +4,7 @@
 #include "sort/insert_sort.h"
 #include "sort/select_sort.h"
 
-// array at p.43
+// array at p.22
 int main(int argc, char const *argv[]) {
 
   { // insertion sort test space
@@ -16,10 +16,20 @@ int main(int argc, char const *argv[]) {
       std::cout << n << ' ';
     }
     std::cout << '\n';
+
+    std::vector<int> b = {31, 41, 59, 26, 41, 58};
+    IterInsertSort(b);
+
+    std::cout << "insertion sort (iterative): ";
+    for (int n : b) {
+      std::cout << n << ' ';
+    }
+    std::cout << '\n';
+
   } // end
 
   { // selection sort test space
-   std::vector<int> a = {31, 41, 59, 26, 41, 58};
+    std::vector<int> a = {31, 41, 59, 26, 41, 58};
     SelectSort(a);
 
     std::cout << "selection sort: ";
