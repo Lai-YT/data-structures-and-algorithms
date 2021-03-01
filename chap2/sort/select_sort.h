@@ -1,3 +1,6 @@
+#ifndef SELECT_SORT_H_
+#define SELECT_SORT_H_
+
 #include <algorithm>
 #include <vector>
 
@@ -17,3 +20,5 @@ void SelectSort(std::vector<int>& a) {
     std::swap(a[j], a[min]);
   }
 }
+
+#endif /* end of include guard: SELECT_SORT_H_ */

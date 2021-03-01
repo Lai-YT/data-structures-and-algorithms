@@ -1,3 +1,6 @@
+#ifndef INSERT_SORT_H_
+#define INSERT_SORT_H_
+
 #include <vector>
 
 // best case: n
@@ -28,3 +31,5 @@ void IterInsertSort(std::vector<int>& a, int j = 0) {
   a[i + 1] = key;
   IterInsertSort(a, j + 1);
 }
+
+#endif /* end of include guard: INSERT_SORT_H_ */
