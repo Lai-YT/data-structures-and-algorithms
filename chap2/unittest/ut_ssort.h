@@ -7,6 +7,9 @@
 #include <cstdlib>
 #include <vector>
 
+// randomly generate 1000 arrays, each with length 500,
+// use std::sort to test if selection sort sorts correctly
+
 TEST(SsortTest, i500) {
   std::srand(std::time(0));
   std::vector<int> a(500);
