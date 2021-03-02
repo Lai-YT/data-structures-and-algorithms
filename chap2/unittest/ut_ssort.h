@@ -4,6 +4,7 @@
 #include "../sort/select_sort.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <vector>
 
 #include "../util/random.h"
@@ -12,7 +13,8 @@
 // use std::sort to test if selection sort sorts correctly
 
 TEST(SsortTest, i500) {
-  for (size_t i = 0; i < 500; ++i) {
+  std::srand(std::time(0));
+  for (size_t i = 0; i < 1000; ++i) {
     std::vector<int> a = RandomArray(500, 0, 1000);
     std::vector<int> stdSorted(a);
     std::sort(stdSorted.begin(), stdSorted.end());

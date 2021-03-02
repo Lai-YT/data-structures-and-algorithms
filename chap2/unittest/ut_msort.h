@@ -4,6 +4,7 @@
 #include "../sort/merge_sort.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <vector>
 
 #include "../util/random.h"
@@ -12,6 +13,7 @@
 // use std::sort to test if merge sort sorts correctly
 
 TEST(MsortTest, i500) {
+  std::srand(std::time(0));
   for (size_t i = 0; i < 1000; ++i) {
     std::vector<int> a = RandomArray(500, 0, 1000);
     std::vector<int> stdSorted(a);
