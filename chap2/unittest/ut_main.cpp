@@ -2,6 +2,7 @@
 
 // sort
 #include "ut_isort.h"
+#include "ut_misort.h"
 #include "ut_msort.h"
 #include "ut_ssort.h"
 

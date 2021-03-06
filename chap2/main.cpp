@@ -3,6 +3,7 @@
 
 #include "sort/insert_sort.h"
 #include "sort/merge_sort.h"
+#include "sort/merge_insert_sort.h"
 #include "sort/select_sort.h"
 
 // array at p.22
@@ -48,6 +49,19 @@ int main(int argc, char const *argv[]) {
     MergeSort(a, 0, a.size() - 1);
 
     std::cout << "merge sort: ";
+    for (int n : a) {
+      std::cout << n << ' ';
+    }
+    std::cout << '\n';
+
+  } // end
+
+  { // merge-insertion sort test space
+
+    std::vector<int> a = {31, 41, 59, 26, 41, 58};
+    MergInsertSort(a, 0, a.size() - 1);
+
+    std::cout << "merge-insertion sort: ";
     for (int n : a) {
       std::cout << n << ' ';
     }
