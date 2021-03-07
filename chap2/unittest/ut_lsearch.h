@@ -15,7 +15,7 @@ TEST(LsearchTest, Found) {
     int v_inx = Random(0, 500);
     int v = 1000;
     a[v_inx] = v;
-    EXPECT_EQ(v_inx, LinearSearch(a, v));
+    ASSERT_EQ(v_inx, LinearSearch(a, v));
   }
 }
 
@@ -24,7 +24,7 @@ TEST(LsearchTest, NotFound) {
   for (size_t i = 0; i < 1000; ++i) {
     std::vector<int> a = RandomArray(500, 0, 1000);
     int v = 1000;
-    EXPECT_EQ(a.size(), LinearSearch(a, v));
+    ASSERT_EQ(a.size(), LinearSearch(a, v));
   }
 }
 

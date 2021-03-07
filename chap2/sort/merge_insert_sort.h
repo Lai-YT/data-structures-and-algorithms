@@ -11,9 +11,10 @@
 
 void Merge(std::vector<int>& a, int head, int mid, int tail);
 
-namespace misort {
-
-  void InsertSort(std::vector<int>::iterator a, size_t n) {
+namespace MISort {
+  // an insertion sort that takes pointer is much more slower than a normol one,
+  // which takes the whole vector
+  void PtrInsertSort(std::vector<int>::iterator a, size_t n) {
     for (size_t j = 1; j < n; ++j) {
       int key = *(a + j);
       int i = j - 1;
@@ -27,9 +28,10 @@ namespace misort {
 
 } // end namespace misort
 
+// head and tail are both included, so notice that the size is (tail - head + 1)
 void MergInsertSort(std::vector<int>& a, int head, int tail) {
-  if (tail - head <= 15) {
-    misort::InsertSort(a.begin() + head, tail - head);
+  if (tail - head <= 7) {
+    MISort::PtrInsertSort(a.begin() + head, tail - head + 1);
     return;
   }
   int mid = (head + tail) / 2;
