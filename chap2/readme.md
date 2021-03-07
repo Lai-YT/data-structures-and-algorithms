@@ -66,59 +66,60 @@ BinarySearch(A, v, low, high)
 
 ## 2-4 inversion
 
-a. List the five inversions of the array {2, 3, 8, 6, 1}. \
-sol. (2, 1), (3, 1), (8, 6), (8, 1), (6, 1)
+- List the five inversions of the array {2, 3, 8, 6, 1}. \
+Sol. (2, 1), (3, 1), (8, 6), (8, 1), (6, 1)
 
-b. What array with elements from the set {1, 2,..., n} has the most inversions? How many does it have? \
-sol. all elemente in descending order
+- What array with elements from the set {1, 2,..., n} has the most inversions? How many does it have? \
+Sol. all elemente in descending order
 
-c. What is the relationship between the running time of insertion sort and the number of inversions in the input array? Justify your answer. \
-sol. The more inversions it has, the more the running time it needs.
+- What is the relationship between the running time of insertion sort and the number of inversions in the input array? Justify your answer. \
+Sol. The more inversions it has, the more the running time it needs.
 
-d. Give an algorithm that determines the number of inversions in any permutation on n elements in O(nlgn) worst-case time. (Hint: Modify merge sort.)
-pseudocode:
-```
-CountInversions(A, p, r)
-  inversions = 0
-  if p < r
-    q = (p + r) / 2
-    inversions = inversions + CountInversions(A, p, q)
-    inversions = inversions + CountInversions(A, q + 1, r)
-    inversions = inversions + MergeInversions(A, p, q, r)
-  return inversions
+- Give an algorithm that determines the number of inversions in any permutation on n elements in O(nlgn) worst-case time. (Hint: Modify merge sort.)
+  - Pseudocode:
 
-MergeInversions(A, p, q, r)
-  n1 = q - p + 1
-  n2 = r - q
-  let L[1..n1] and R[1..n2] be new arrays
-  for i = 1 to n1
-    L[i] = A[p + i - 1]
-  for j = 1 to n2
-    R[j] = A[q + j]
-  i = 1
-  j = 1
-  k = 1
-  inversions = 0
-  counted = false
-  while k <= p and i <= n1 and j <= n2
-    if counted == false and R[j] < L[i]
-      inversions = inversions + n1 - i + 1
-      counted = true
-    if L[i] <= R[j]
-      A[k] = L[i]
-      i = i + 1
-    else
+  ```
+  CountInversions(A, p, r)
+    inversions = 0
+    if p < r
+      q = (p + r) / 2
+      inversions = inversions + CountInversions(A, p, q)
+      inversions = inversions + CountInversions(A, q + 1, r)
+      inversions = inversions + MergeInversions(A, p, q, r)
+    return inversions
+
+  MergeInversions(A, p, q, r)
+    n1 = q - p + 1
+    n2 = r - q
+    let L[1..n1] and R[1..n2] be new arrays
+    for i = 1 to n1
+      L[i] = A[p + i - 1]
+    for j = 1 to n2
+      R[j] = A[q + j]
+    i = 1
+    j = 1
+    k = 1
+    inversions = 0
+    counted = false
+    while k <= p and i <= n1 and j <= n2
+      if counted == false and R[j] < L[i]
+        inversions = inversions + n1 - i + 1
+        counted = true
+      if L[i] <= R[j]
+        A[k] = L[i]
+        i = i + 1
+      else
+        A[k] = R[j]
+        j = j + 1
+        counted = false
+      k = k + 1
+    while j <= n2
       A[k] = R[j]
       j = j + 1
-      counted = false
-    k = k + 1
-  while j <= n2
-    A[k] = R[j]
-    j = j + 1
-    k = k + 1
-  while i <= n1
-    A[k] = L[i]
-    i = i + 1
-    k = k + 1
-  return inversions
-```
+      k = k + 1
+    while i <= n1
+      A[k] = L[i]
+      i = i + 1
+      k = k + 1
+    return inversions
+  ```
