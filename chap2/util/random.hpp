@@ -1,5 +1,5 @@
-#ifndef RANDOM_H_
-#define RANDOM_H_
+#ifndef RANDOM_HPP_
+#define RANDOM_HPP_
 
 #include <cstdlib>
 #include <utility>
@@ -20,4 +20,4 @@ std::vector<int> RandomArray(int size, int lower_bound, int upper_bound) {
   return std::move(v);
 }
 
-#endif /* end of include guard: RANDOM_H_ */
+#endif /* end of include guard: RANDOM_HPP_ */

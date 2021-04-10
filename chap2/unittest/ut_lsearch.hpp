@@ -1,12 +1,9 @@
-#ifndef UT_LSEARCH_H_
-#define UT_LSEARCH_H_
-
-#include "../srch/linear_search.h"
+#include "../srch/linear_search.hpp"
 
 #include <cstdlib>
 #include <vector>
 
-#include "../util/random.h"
+#include "../util/random.hpp"
 
 TEST(LsearchTest, Found) {
   std::srand(std::time(0));
@@ -27,5 +24,3 @@ TEST(LsearchTest, NotFound) {
     ASSERT_EQ(a.size(), LinearSearch(a, v));
   }
 }
-
-#endif /* end of include guard: UT_LSEARCH_H_ */

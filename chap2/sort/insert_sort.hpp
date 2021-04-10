@@ -1,5 +1,5 @@
-#ifndef INSERT_SORT_H_
-#define INSERT_SORT_H_
+#ifndef INSERT_SORT_HPP_
+#define INSERT_SORT_HPP_
 
 #include <vector>
 
@@ -32,4 +32,4 @@ void IterInsertSort(std::vector<int>& a, int j = 0) {
   IterInsertSort(a, j + 1);
 }
 
-#endif /* end of include guard: INSERT_SORT_H_ */
+#endif /* end of include guard: INSERT_SORT_HPP_ */

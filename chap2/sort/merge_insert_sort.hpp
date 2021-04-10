@@ -1,9 +1,9 @@
-#ifndef MERGE_INSERT_SORT_H_
-#define MERGE_INSERT_SORT_H_
+#ifndef MERGE_INSERT_SORT_HPP_
+#define MERGE_INSERT_SORT_HPP_
 
 #include <vector>
 
-#include "merge_sort.h"
+#include "merge_sort.hpp"
 
 // best case: nlogn
 // worst case: nlogn
@@ -11,7 +11,7 @@
 
 void Merge(std::vector<int>& a, int head, int mid, int tail);
 
-namespace MISort {
+namespace misort {
   // an insertion sort that takes pointer is much more slower than a normol one,
   // which takes the whole vector
   void PtrInsertSort(std::vector<int>::iterator a, size_t n) {
@@ -26,12 +26,12 @@ namespace MISort {
     }
   }
 
-} // end namespace misort
+}  // end namespace misort
 
 // head and tail are both included, so notice that the size is (tail - head + 1)
 void MergInsertSort(std::vector<int>& a, int head, int tail) {
   if (tail - head <= 7) {
-    MISort::PtrInsertSort(a.begin() + head, tail - head + 1);
+    misort::PtrInsertSort(a.begin() + head, tail - head + 1);
     return;
   }
   int mid = (head + tail) / 2;
@@ -40,4 +40,4 @@ void MergInsertSort(std::vector<int>& a, int head, int tail) {
   Merge(a, head, mid, tail);
 }
 
-#endif /* end of include guard: MERGE_INSERT_SORT_H_ */
+#endif /* end of include guard: MERGE_INSERT_SORT_HPP_ */

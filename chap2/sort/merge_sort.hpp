@@ -1,5 +1,5 @@
-#ifndef MERGE_SORT_H_
-#define MERGE_SORT_H_
+#ifndef MERGE_SORT_HPP_
+#define MERGE_SORT_HPP_
 
 #include <vector>
 
@@ -40,7 +40,7 @@ void Merge(std::vector<int>& a, int head, int mid, int tail) {
     j = j + 1;
     k = k + 1;
   }
-} // end Merge
+}  // end Merge
 
 // head and tail are both included
 void MergeSort(std::vector<int>& a, int head, int tail) {
@@ -51,4 +51,4 @@ void MergeSort(std::vector<int>& a, int head, int tail) {
   Merge(a, head, mid, tail);
 }
 
-#endif /* tail of include guard: MERGE_SORT_H_ */
+#endif /* tail of include guard: MERGE_SORT_HPP_ */

@@ -1,5 +1,5 @@
-#ifndef BRUTE_FORCE_INVERSIONS_H_
-#define BRUTE_FORCE_INVERSIONS_H_
+#ifndef BRUTE_FORCE_INVERSIONS_HPP_
+#define BRUTE_FORCE_INVERSIONS_HPP_
 
 #include <vector>
 
@@ -17,4 +17,4 @@ int BruteForceInversions(std::vector<int>& a) {
   return inversions;
 }
 
-#endif /* end of include guard: BRUTE_FORCE_INVERSIONS_H_ */
+#endif /* end of include guard: BRUTE_FORCE_INVERSIONS_HPP_ */

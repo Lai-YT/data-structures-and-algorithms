@@ -1,5 +1,5 @@
-#ifndef MERGE_INVERSIONS_H_
-#define MERGE_INVERSIONS_H_
+#ifndef MERGE_INVERSIONS_HPP_
+#define MERGE_INVERSIONS_HPP_
 
 #include <vector>
 
@@ -11,7 +11,7 @@ int MergeInversions(std::vector<int>& a, int head, int mid, int tail) {
   std::vector<int> left(a.begin() + head, a.begin() + mid + 1);
   std::vector<int> right(a.begin() + mid + 1, a.begin() + tail + 1);
 
-  int i = 0, j = 0, k = 0; // i for left, j for right, k for a
+  int i = 0, j = 0, k = 0;  // i for left, j for right, k for a
   int inversions = 0;
   bool counted = false;
   while (k <= tail && i <= n1 && j <= n2) {
@@ -55,4 +55,4 @@ int CountInversions(std::vector<int>& a, int head, int tail) {
   return inversions;
 }
 
-#endif /* end of include guard: MERGE_INVERSIONS_H_ */
+#endif /* end of include guard: MERGE_INVERSIONS_HPP_ */

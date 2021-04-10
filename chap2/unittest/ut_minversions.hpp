@@ -1,14 +1,11 @@
-#ifndef UT_MINVERSIONS_H_
-#define UT_MINVERSIONS_H_
-
-#include "../spec/merge_inversions.h"
+#include "../spec/merge_inversions.hpp"
 
 #include <cstdlib>
 #include <iostream>
 #include <vector>
 
-#include "../spec/brute_force_inversions.h"
-#include "../util/random.h"
+#include "../spec/brute_force_inversions.hpp"
+#include "../util/random.hpp"
 
 // randomly generate 1000 arrays, each with length 500,
 // use BruteForceInversions to test if merge-inversions counts correctly
@@ -23,5 +20,3 @@ TEST(MergInverTest, i500) {
     ASSERT_EQ(expect_invers, act_invers);
   }
 }
-
-#endif /* end of include guard: UT_MINVERSIONS_H_ */

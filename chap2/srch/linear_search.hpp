@@ -1,3 +1,6 @@
+#ifndef LINEAR_SEARCH_HPP_
+#define LINEAR_SEARCH_HPP_
+
 #include <vector>
 
 // Exercise at p.22
@@ -12,3 +15,6 @@ int LinearSearch(std::vector<int> a, int v) {
   }
   return a.size();
 }
+
+
+#endif /* end of include guard: LINEAR_SEARCH_HPP_ */

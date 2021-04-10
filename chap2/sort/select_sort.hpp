@@ -1,5 +1,5 @@
-#ifndef SELECT_SORT_H_
-#define SELECT_SORT_H_
+#ifndef SELECT_SORT_HPP_
+#define SELECT_SORT_HPP_
 
 #include <algorithm>
 #include <vector>
@@ -21,4 +21,4 @@ void SelectSort(std::vector<int>& a) {
   }
 }
 
-#endif /* end of include guard: SELECT_SORT_H_ */
+#endif /* end of include guard: SELECT_SORT_HPP_ */

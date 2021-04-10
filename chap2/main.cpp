@@ -1,10 +1,10 @@
 #include <iostream>
 #include <vector>
 
-#include "sort/insert_sort.h"
-#include "sort/merge_sort.h"
-#include "sort/merge_insert_sort.h"
-#include "sort/select_sort.h"
+#include "sort/insert_sort.hpp"
+#include "sort/merge_sort.hpp"
+#include "sort/merge_insert_sort.hpp"
+#include "sort/select_sort.hpp"
 
 // array at p.22
 int main(int argc, char const *argv[]) {
