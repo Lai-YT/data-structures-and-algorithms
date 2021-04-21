@@ -20,13 +20,13 @@ TEST(IsortTest, Size500Time1000) {
   }
 }
 
-TEST(IterIsortTest, Size500Time1000) {
+TEST(RecurIsortTest, Size500Time1000) {
   std::srand(std::time(0));
   for (size_t i = 0; i < 1000; ++i) {
     std::vector<int> a = RandomArray(500, 0, 1000);
     std::vector<int> stdSorted(a);
     std::sort(stdSorted.begin(), stdSorted.end());
-    IterInsertSort(a);
+    RecurInsertSort(a);
     ASSERT_EQ(stdSorted, a);
   }
 }

@@ -1,4 +1,3 @@
-#include <iostream>
 // this is a circular-queue
 template<typename T>
 class Queue {

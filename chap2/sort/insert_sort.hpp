@@ -20,7 +20,7 @@ void InsertSort(std::vector<int>& a) {
 }
 
 // subarray a[0, ..., j - 1] is sorted
-void IterInsertSort(std::vector<int>& a, int j = 0) {
+void RecurInsertSort(std::vector<int>& a, int j = 0) {
   if (j == a.size()) return;
   int key = a[j];
   int i = j - 1;
@@ -29,7 +29,7 @@ void IterInsertSort(std::vector<int>& a, int j = 0) {
     i = i - 1;
   }
   a[i + 1] = key;
-  IterInsertSort(a, j + 1);
+  RecurInsertSort(a, j + 1);
 }
 
 #endif /* end of include guard: INSERT_SORT_HPP_ */
