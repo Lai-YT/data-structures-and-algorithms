@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "ut_bucket_sort.hpp"
 #include "ut_counting_sort.hpp"
 #include "ut_radix_sort.hpp"
 

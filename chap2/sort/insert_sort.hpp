@@ -7,9 +7,10 @@
 // worst case: n-squared
 // pseudocode at p.20, iterative at p.39
 
-void InsertSort(std::vector<int>& a) {
+template<typename T>
+void InsertSort(std::vector<T>& a) {
   for (size_t j = 1; j < a.size(); ++j) {
-    int key = a[j];
+    T key = a[j];
     int i = j - 1;
     while (i >= 0 && a[i] > key) {
       a[i + 1] = a[i];
