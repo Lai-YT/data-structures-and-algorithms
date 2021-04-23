@@ -1,6 +1,7 @@
 #include "../sort/bucket_sort.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <gtest/gtest.h>
 #include <vector>
 
@@ -21,6 +22,7 @@ TEST(BucketTest, TextbookExe) {
 }
 
 TEST(BucketTest, Random) {
+  std::srand(std::time(0));
   std::vector<int> a = RandomArray(100, 0, 1000);
   std::vector<double> b(100, 0);
   for (size_t i = 0; i < 100; i++) {

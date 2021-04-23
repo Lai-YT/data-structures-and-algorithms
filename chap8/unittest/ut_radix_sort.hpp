@@ -1,6 +1,7 @@
 #include "../sort/radix_sort.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <gtest/gtest.h>
 #include <vector>
 
@@ -101,9 +102,10 @@ TEST(RadixTest, IntegerDiffDigit) {
 }
 
 TEST(RadixSort, Random) {
-  std::vector<int> a = RandomArray(10000, 0, 100);
+  std::srand(std::time(0));
+  std::vector<int> a = RandomArray(100, 0, 10000);
   std::vector<int> b(a);
-  
+
   RadixSort(a, 4);
   std::sort(b.begin(), b.end());
 

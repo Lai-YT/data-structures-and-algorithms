@@ -1,6 +1,7 @@
 #include "../sort/counting_sort.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <gtest/gtest.h>
 #include <utility>
 #include <vector>
@@ -30,6 +31,7 @@ TEST(CountingTest, TextbookExe) {
 }
 
 TEST(CountingTest, Random) {
+  std::srand(std::time(0));
   std::vector<int> a = RandomArray(100, 0, 100), b(100);
   CountingSort(a, b, 99);
   std::sort(a.begin(), a.end());
