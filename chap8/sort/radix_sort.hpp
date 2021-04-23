@@ -2,7 +2,6 @@
 #define RADIX_SORT_HPP_
 
 #include <algorithm>
-#include <iostream>
 #include <string>
 #include <vector>
 
