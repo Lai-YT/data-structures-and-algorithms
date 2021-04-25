@@ -3,7 +3,7 @@ import unittest
 import src.linked_list as ll
 
 
-class LinkedListTestCase(unittest.TestCase):
+class NodeTestCase(unittest.TestCase):
     def setUp(self):
         self.node: Node = ll.Node(25)
 
@@ -15,6 +15,27 @@ class LinkedListTestCase(unittest.TestCase):
         next_node: Node = self.node.next()
 
         self.assertEqual(20, next_node.value())
+
+
+class LinkedListTestCase(unittest.TestCase):
+    def setUp(self):
+        self.linked_list = ll.LinkedList()
+
+    def test_init(self):
+        self.assertIsNone(self.linked_list.head())
+        self.assertIsNone(self.linked_list.tail())
+
+    def test_insert(self):
+        # insert one
+        self.linked_list.insert(25)
+        self.assertIsNotNone(self.linked_list.head())
+        self.assertIsNotNone(self.linked_list.tail())
+        self.assertEqual(25, self.linked_list.head().value())
+        self.assertEqual(25, self.linked_list.tail().value())
+        # insert two
+        self.linked_list.insert(11)
+        self.assertEqual(25, self.linked_list.head().value())
+        self.assertEqual(11, self.linked_list.tail().value())
 
 
 if __name__ == '__main__':
