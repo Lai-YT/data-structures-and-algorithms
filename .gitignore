@@ -6,3 +6,5 @@ makefile
 # vs code
 **/.vs
 **/.vscode
+
+__pycache__/

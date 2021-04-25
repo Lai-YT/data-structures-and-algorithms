@@ -12,6 +12,7 @@ void InsertSort(std::vector<T>& a) {
   for (size_t j = 1; j < a.size(); ++j) {
     T key = a[j];
     int i = j - 1;
+    // swap to the front
     while (i >= 0 && a[i] > key) {
       a[i + 1] = a[i];
       i = i - 1;
