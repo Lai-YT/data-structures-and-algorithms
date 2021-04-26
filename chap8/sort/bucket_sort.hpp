@@ -8,16 +8,19 @@
 
 // at p.201
 
-void BucketSort(std::vector<double>& a, size_t num_of_bucket = 10) {
-  std::vector<std::vector<double>> bucket(num_of_bucket);
+void BucketSort(std::vector<double>& a, size_t num_of_buckets = 10) {
+  std::vector<std::vector<double>> buckets(num_of_buckets);
+  // put into buckets
   for (double n : a) {
-    bucket.at(floor(n * num_of_bucket)).push_back(n);
+    buckets.at(floor(n * num_of_buckets)).push_back(n);
   }
   int index = 0;
-  for (auto& vec : bucket) {
+  for (auto& vec : buckets) {
+    // inner sort
     if (vec.size() > 1) {
       InsertSort(vec);
     }
+    // put sorted elements back
     if (vec.size()) {
       for (double n : vec) {
         a.at(index++) = n;

@@ -26,8 +26,7 @@ template<typename T>
 void CountingSort(
     const std::vector<std::pair<int, T>>& a,
     std::vector<std::pair<int, T>>& b,
-    const int max)
-{
+    const int max) {
   std::vector<int> c(max + 1, 0);
   for (auto n : a) {
     ++(c.at(n.first));
