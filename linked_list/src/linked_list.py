@@ -36,6 +36,9 @@ class LinkedList:
     def tail(self) -> Node:
         return self._tail
 
+    def is_empty(self) -> bool:
+        return self._head == None
+
 
 if __name__ == '__main__':
     main()

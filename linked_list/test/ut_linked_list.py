@@ -37,6 +37,16 @@ class LinkedListTestCase(unittest.TestCase):
         self.assertEqual(25, self.linked_list.head().value())
         self.assertEqual(11, self.linked_list.tail().value())
 
+    def test_mult_insert(self):
+        for i in range(100):
+            self.linked_list.insert(i)
+            self.assertEqual(i, self.linked_list.tail().value())
+
+    def test_is_empty(self):
+        self.assertTrue(self.linked_list.is_empty())
+        self.linked_list.insert(0)
+        self.assertFalse(self.linked_list.is_empty())
+
 
 if __name__ == '__main__':
     unittest.main()
