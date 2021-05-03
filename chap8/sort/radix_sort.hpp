@@ -14,10 +14,7 @@ void RadixSort(std::vector<std::string>& a, int digit) {
   for (int i = digit - 1; i >= 0; --i) {
     std::stable_sort(a.begin(), a.end(),
       [i](const std::string& latter, const std::string& former) -> bool {
-        if (latter.at(i) < former.at(i)) {
-          return true;
-        }
-        return false;
+        return latter.at(i) < former.at(i);
       }  // lambda
     );  // stable sort
   }  // for-loop
@@ -29,10 +26,7 @@ void RadixSort(std::vector<int>& a, int digit) {
       [factor](int latter, int former) -> bool {
         latter /= factor;
         former /= factor;
-        if (latter % 10 < former % 10) {
-          return true;
-        }
-        return false;
+        return latter % 10 < former % 10;
       }  // lambda
     );  // stable sort
   }  // for-loop
