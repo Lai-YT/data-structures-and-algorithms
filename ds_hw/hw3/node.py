@@ -19,3 +19,21 @@ class Node:
 
     def __ne__(self, other: Node) -> bool:
         return not self.__eq__(other)
+
+    def __add__(self, other: Node) -> Node or None:
+        if self.exponent != other.exponent:
+            return None
+        return Node(self.coefficient + other.coefficient, self.exponent)
+
+    def __sub__(self, other: Node) -> Node or None:
+        if self.exponent != other.exponent:
+            return None
+        return Node(self.coefficient - other.coefficient, self.exponent)
+
+    def __mul__(self, other: Node) -> Node:
+        return Node(self.coefficient * other.coefficient,
+                    self.exponent + other.exponent)
+
+    def __truediv__(self, other: Node) -> Node:
+        return Node(self.coefficient / other.coefficient,
+                    self.exponent - other.exponent)

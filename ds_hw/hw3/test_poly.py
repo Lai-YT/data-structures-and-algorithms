@@ -145,6 +145,38 @@ class PolyTestCase(unittest.TestCase):
         self._poly.delete_at_head()
         self.assertEqual(Node(3.3, 7), self._poly.head)
 
+    def test_sort(self):
+        self._poly.insert_at_head(3.3, 7)
+        self._poly.insert_at_head(5.5, 3)
+        self._poly.insert_at_head(2.2, 10)
+        self._poly.insert_at_head(4.1, 6)
+
+        self._poly.sort()
+
+        self.assertEqual(Node(2.2, 10), self._poly.head)
+        self._poly.delete_at_head()
+        self.assertEqual(Node(3.3, 7), self._poly.head)
+        self._poly.delete_at_head()
+        self.assertEqual(Node(4.1, 6), self._poly.head)
+        self._poly.delete_at_head()
+        self.assertEqual(Node(5.5, 3), self._poly.head)
+
+    def test_times_degree(self):
+        self._poly.insert_at_head(3.3, 7)
+        self._poly.insert_at_head(5.5, 3)
+        self._poly.insert_at_head(2.2, 10)
+        self._poly.insert_at_head(4.1, 6)
+
+        self._poly.times_term(2, 3)
+
+        self.assertEqual(Node(8.2, 9), self._poly.head)
+        self._poly.delete_at_head()
+        self.assertEqual(Node(4.4, 13), self._poly.head)
+        self._poly.delete_at_head()
+        self.assertEqual(Node(11, 6), self._poly.head)
+        self._poly.delete_at_head()
+        self.assertEqual(Node(6.6, 10), self._poly.head)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -62,7 +62,14 @@ def substract(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:
 
 # multiplying two polynomials
 def multiply(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:
-    pass
+    curr: Node = poly2.head
+    result_poly = Poly_List()
+    while curr:
+        poly: Poly_List = poly1.copy()
+        poly.times_term(curr.coefficient, curr.exponent)
+        result_poly = add(result_poly, poly)[0]
+        curr = curr.next
+    return [result_poly, None]
 
 # dividng poly1 by poly2 and then returning the quotient and remainder
 def divide(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:

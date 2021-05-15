@@ -19,7 +19,7 @@ class StrategyTestCase(unittest.TestCase):
         result1: Poly_List = add(self._poly1, self._poly2)[0]
         self.assertEqual(3, result1.size)
         self.assertEqual(2, result1.degree)
-        print(result1)
+
         self.assertEqual(Node(2, 2), result1.head)
         result1.delete_at_head()
         self.assertEqual(Node(1, 1), result1.head)
@@ -29,7 +29,7 @@ class StrategyTestCase(unittest.TestCase):
         result2: Poly_List = add(self._poly2, self._poly1)[0]
         self.assertEqual(3, result2.size)
         self.assertEqual(2, result2.degree)
-        print(result2)
+
         self.assertEqual(Node(2, 2), result2.head)
         result2.delete_at_head()
         self.assertEqual(Node(1, 1), result2.head)
@@ -40,7 +40,7 @@ class StrategyTestCase(unittest.TestCase):
         result1: Poly_List = substract(self._poly2, self._poly1)[0]
         self.assertEqual(3, result1.size)
         self.assertEqual(2, result1.degree)
-        print(result1)
+
         self.assertEqual(Node(2, 2), result1.head)
         result1.delete_at_head()
         self.assertEqual(Node(-1, 1), result1.head)
@@ -50,9 +50,34 @@ class StrategyTestCase(unittest.TestCase):
         result2: Poly_List = substract(self._poly1, self._poly2)[0]
         self.assertEqual(3, result2.size)
         self.assertEqual(2, result2.degree)
-        print(result2)
+
         self.assertEqual(Node(-2, 2), result2.head)
         result2.delete_at_head()
         self.assertEqual(Node(1, 1), result2.head)
         result2.delete_at_head()
         self.assertEqual(Node(-1, 0), result2.head)
+
+    def test_multiply(self):
+        result1: Poly_List = multiply(self._poly1, self._poly2)[0]
+        self.assertEqual(4, result1.size)
+        self.assertEqual(3, result1.degree)
+
+        self.assertEqual(Node(2, 3), result1.head)
+        result1.delete_at_head()
+        self.assertEqual(Node(2, 2), result1.head)
+        result1.delete_at_head()
+        self.assertEqual(Node(2, 1), result1.head)
+        result1.delete_at_head()
+        self.assertEqual(Node(2, 0), result1.head)
+        # exchange
+        result2: Poly_List = multiply(self._poly2, self._poly1)[0]
+        self.assertEqual(4, result2.size)
+        self.assertEqual(3, result2.degree)
+
+        self.assertEqual(Node(2, 3), result2.head)
+        result2.delete_at_head()
+        self.assertEqual(Node(2, 2), result2.head)
+        result2.delete_at_head()
+        self.assertEqual(Node(2, 1), result2.head)
+        result2.delete_at_head()
+        self.assertEqual(Node(2, 0), result2.head)

@@ -44,6 +44,26 @@ class NodeTestCase(unittest.TestCase):
         self.assertTrue(Node(0.5, 3) != self._node)
         self.assertTrue(Node(3.1, 5) != self._node)
 
+    def test_add(self):
+        self.assertEqual(Node(6.6, 9), Node(3.1, 9) + Node(3.5, 9))
+
+    def test_sub(self):
+        sub_node = Node(3.1, 9) - Node(3.5, 9)
+        self.assertAlmostEqual(-0.4, sub_node.coefficient)
+        self.assertAlmostEqual(9, sub_node.exponent)
+
+    def test_mul(self):
+        self.assertEqual(Node(10, 6), Node(5, 4) * Node(2, 2))
+        self.assertEqual(Node(-10, 6), Node(5, 4) * Node(-2, 2))
+        self.assertEqual(Node(-10, 6), Node(-5, 4) * Node(2, 2))
+        self.assertEqual(Node(10, 6), Node(-5, 4) * Node(-2, 2))
+
+    def test_truediv(self):
+        self.assertEqual(Node(5, 4), Node(10, 6) / Node(2, 2))
+        self.assertEqual(Node(-5, 4), Node(-10, 6) / Node(2, 2))
+        self.assertEqual(Node(-5, 4), Node(10, 6) / Node(-2, 2))
+        self.assertEqual(Node(5, 4), Node(-10, 6) / Node(-2, 2))
+
 
 if __name__ == '__main__':
     unittest.main()
