@@ -188,11 +188,8 @@ class Poly_List:
 
         # helper function for coef casting
         # cast floating point number with .0 to integer
-        def _cast_to_int_if_float_eq_int_else_float(num_str: str) -> int or float:
-            # single + sign represents 1
-            if num_str == '+':
-                return 1
-            return int(num_str) if int(num_str) == float(num_str) else float(num_str)
+        def _cast_to_int_if_float_eq_int_else_float(num: float) -> int or float:
+            return int(num) if int(num) == float(num) else float(num)
 
         # the head node is special in sign representation
         self.head.coefficient = _cast_to_int_if_float_eq_int_else_float(self.head.coefficient)
