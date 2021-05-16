@@ -63,3 +63,18 @@ if __name__ == '__main__':
     poly_operation('inFile/inFile-0.txt')
     poly_operation('inFile/inFile-1.txt')
     poly_operation('inFile/inFile-2.txt')
+    poly_operation('inFile/inFile-3.txt')
+    poly_operation('inFile/inFile-4.txt')
+    # 4x^3-2x+1 substract -3x^2+x+4
+    # The result is: 4x^3+3x^2-3x-3
+    # 4x^3-2x+1 substract 3x^2+x+4
+    # The result is: 4x^3-3x^2-3x-3
+    # 5x^5-8x^3+2x+10 substract 3x^8-6x^6-4x^4-6x+4
+    # The result is: -3x^8+6x^6+5x^5+4x^4-8x^3+8x+6
+    # 5x^5-8x^3+2x+10 add 3x^8-6x^6-4x^4-6x+4
+    # The result is: 3x^8-6x^6+5x^5-4x^4-8x^3-4x+14
+    # 3x^8-6x^6-4x^4-6x+4 divide 5x^5-8x^3+2x+10
+    # The quotient is: 0.6x^3-0.24000000000000005x
+    # The remainder is: -7.120000000000001x^4-6x^3+0.4800000000000001x^2-3.5999999999999996x+4
+    # 4x^3-2x+1 multiply 3x^2+x+4
+    # The result is: 12x^5+4x^4+10x^3+x^2-7x+4

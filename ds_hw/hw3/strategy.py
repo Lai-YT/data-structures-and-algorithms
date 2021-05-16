@@ -34,6 +34,12 @@ def add(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:
             curr_h, curr_l = curr_h.next, curr_l.next
         else:
             curr_h = curr_h.next
+    # remove leading 0 terms
+    curr = result_poly.head
+    while curr.coefficient == 0:
+        curr = curr.next
+        result_poly.delete_at_head()
+
     return [result_poly, None]
 
 
@@ -58,7 +64,14 @@ def substract(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:
             curr_1, curr_2 = curr_1.next, curr_2.next
         else:
             curr_1 = curr_1.next
+    # remove leading 0 terms
+    curr = result_poly.head
+    while curr.coefficient == 0:
+        curr = curr.next
+        result_poly.delete_at_head()
+
     return [result_poly, None]
+
 
 # multiplying two polynomials
 def multiply(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:
@@ -71,6 +84,29 @@ def multiply(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:
         curr = curr.next
     return [result_poly, None]
 
+
 # dividng poly1 by poly2 and then returning the quotient and remainder
 def divide(poly1: Poly_List, poly2: Poly_List) -> List[Poly_List]:
-    pass
+    # if poly1 has smaller degree than poly2, poly1 is the remainder, with quotient 0
+    if poly2.degree > poly1.degree:
+        quotient = Poly_List()
+        quotient.insert_at_tail(0, 0)
+        return [quotient, poly1]
+
+    # make the polys in standard form: descending and filled
+    poly1_remain = poly1.copy()
+    poly1_remain.sort()
+    poly1_remain.padding()
+    poly2.sort()
+    poly2.padding()
+
+    quotient = Poly_List()
+    while poly1_remain.degree >= poly2.degree:
+        sub_poly2 = poly2.copy()
+        sub_poly2.times_term(poly1_remain.head.coefficient / poly2.head.coefficient,
+                             poly1_remain.degree - poly2.degree)
+        quotient.insert_at_tail(poly1_remain.head.coefficient / poly2.head.coefficient,
+                                poly1_remain.degree - poly2.degree)
+        poly1_remain = substract(poly1_remain, sub_poly2)[0]
+
+    return [quotient, poly1_remain]

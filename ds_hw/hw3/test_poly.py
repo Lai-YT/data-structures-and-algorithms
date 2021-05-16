@@ -35,8 +35,6 @@ class PolyTestCase(unittest.TestCase):
         self.assertEqual(Node(2.2, 3), self._poly.tail)
         self.assertEqual(4, self._poly.size)
 
-        print(self._poly)
-
     def test_insert_at_tail(self):
         self._poly.insert_at_tail(5.5, 0)
         self.assertEqual(Node(5.5, 0), self._poly.head)
@@ -101,8 +99,6 @@ class PolyTestCase(unittest.TestCase):
         self._poly.insert_at_head(2.2, 10)
 
         self._poly.padding()
-
-        print(self._poly)
 
         self.assertEqual(11, self._poly.size)
         self.assertEqual(Node(2.2, 10), self._poly.head)

@@ -182,33 +182,61 @@ class Poly_List:
     # This prints the polynomial in a given format
     def __str__(self) -> str:
         if self.head == None:
-            return  ''
+            return  '0'
 
-        curr = self.head
         str_poly: List[str] = []
 
-        # the head node is special in sign representation
-        str_poly.append(f'{curr.coefficient}')
-        if curr.exponent > 1:
-            str_poly.append(f'x^{curr.exponent}')
-        elif curr.exponent == 1:
-            str_poly.append('x')
-        curr = curr.next
+        # helper function for coef casting
+        # cast floating point number with .0 to integer
+        def _cast_to_int_if_float_eq_int_else_float(num_str: str) -> int or float:
+            # single + sign represents 1
+            if num_str == '+':
+                return 1
+            return int(num_str) if int(num_str) == float(num_str) else float(num_str)
 
+        # the head node is special in sign representation
+        self.head.coefficient = _cast_to_int_if_float_eq_int_else_float(self.head.coefficient)
+
+        # coef = 1, -1
+        if self.head.coefficient == 1:
+            if self.head.exponent == 0:
+                str_poly.append('1')
+        elif self.head.coefficient == -1:
+            if self.head.exponent == 0:
+                str_poly.append('-1')
+            else:
+                str_poly.append('-')
+        # normal case
+        else:
+            str_poly.append(f'{self.head.coefficient}')
+        # exponent
+        if self.head.exponent > 1:
+            str_poly.append(f'x^{self.head.exponent}')
+        elif self.head.exponent == 1:
+            str_poly.append('x')
+
+        curr = self.head.next
         while curr:
+            curr.coefficient = _cast_to_int_if_float_eq_int_else_float(curr.coefficient)
             # coefficient first
             if curr.coefficient == 0:
                 curr = curr.next
                 continue
-            # coefficient 1 is special
+            # normal positive case
             if curr.coefficient > 0 and curr.coefficient != 1:
                 str_poly.append(f'+{curr.coefficient}')
+            # coef == 1, -1 case
             elif curr.coefficient == 1:
-                if curr.exponent == 0:
-                    str_poly.append('+1')
-                    break
-                else:
+                if curr.exponent != 0:
                     str_poly.append('+')
+                else:
+                    str_poly.append('+1')
+            elif curr.coefficient == -1:
+                if curr.exponent != 0:
+                    str_poly.append('-')
+                else:
+                    str_poly.append('-1')
+            # normal negative case
             else:
                 str_poly.append(f'{curr.coefficient}')
 
