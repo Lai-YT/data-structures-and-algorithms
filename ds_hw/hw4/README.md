@@ -11,3 +11,14 @@ In this problem, you need to implement an ***array-based binary search tree*** *
 The binary search tree will be built or defined as a class, `BinarySearchTree`, and the operations mentioned above are defined as the methods. Of course, you can have other auxiliary methods. Initially, the binary search tree is empty. Your program allows the user to search, insert, and delete a node with a key. Please run `preorderTraversal()`, `postorderTraversal()`, and `inorderTraversal()` for the same binary search tree to see what you can observe.
 
 [Python math Module](https://docs.python.org/3/library/math.html)
+
+## Classes
+
+### BST
+
+This is a more general binary search tree, but not exactly what this homework wants.
+
+### BinarySearchTree
+
+This is a wrapper class that has all the methods above. \
+*BinarySearchTree* wraps a *BST* and delegates all the works by calling corresponding methods.

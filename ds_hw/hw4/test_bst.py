@@ -1,11 +1,11 @@
-from binary_search_tree import *
+from bst import *
 
 import unittest
 
 
 class BinarySearchTreeTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self._bst = BinarySearchTree()
+        self._bst = BST()
 
     def test_insert_1(self) -> None:
         self.assertEqual('', str(self._bst))
@@ -30,22 +30,22 @@ class BinarySearchTreeTestCase(unittest.TestCase):
         self._bst.insert(7)
         self._bst.insert(4)
         self._bst.insert(5)
-        self.assertEqual('1 2 3 4 5 6 7', self._bst.inorderTraversal())
+        self.assertEqual('1 2 3 4 5 6 7', self._bst.inorder())
 
-    def test_inorder_traversal(self) -> None:
-        self.assertEqual('', self._bst.inorderTraversal())
+    def test_inorder(self) -> None:
+        self.assertEqual('', self._bst.inorder())
         self._bst.insert(7)
-        self.assertEqual('7', self._bst.inorderTraversal())
+        self.assertEqual('7', self._bst.inorder())
         self._bst.insert(7)
-        self.assertEqual('7 7', self._bst.inorderTraversal())
+        self.assertEqual('7 7', self._bst.inorder())
         self._bst.insert(7)
-        self.assertEqual('7 7 7', self._bst.inorderTraversal())
+        self.assertEqual('7 7 7', self._bst.inorder())
         self._bst.insert(1)
-        self.assertEqual('1 7 7 7', self._bst.inorderTraversal())
+        self.assertEqual('1 7 7 7', self._bst.inorder())
         self._bst.insert(2)
-        self.assertEqual('1 2 7 7 7', self._bst.inorderTraversal())
+        self.assertEqual('1 2 7 7 7', self._bst.inorder())
         self._bst.insert(0)
-        self.assertEqual('0 1 2 7 7 7', self._bst.inorderTraversal())
+        self.assertEqual('0 1 2 7 7 7', self._bst.inorder())
 
     def test_search_key(self) -> None:
         self._bst.insert(2)
@@ -55,19 +55,109 @@ class BinarySearchTreeTestCase(unittest.TestCase):
         self._bst.insert(7)
         self._bst.insert(4)
         self._bst.insert(5)
-        self.assertEqual('1 2 3 4 5 6 7', self._bst.inorderTraversal())
 
-        self.assertEqual('1 is found', self._bst.searchKey(1))
-        self.assertEqual('2 is found', self._bst.searchKey(2))
-        self.assertEqual('3 is found', self._bst.searchKey(3))
-        self.assertEqual('4 is found', self._bst.searchKey(4))
-        self.assertEqual('5 is found', self._bst.searchKey(5))
-        self.assertEqual('6 is found', self._bst.searchKey(6))
-        self.assertEqual('7 is found', self._bst.searchKey(7))
+        self.assertEqual(2, self._bst.search(1))
+        self.assertEqual(1, self._bst.search(2))
+        self.assertEqual(3, self._bst.search(3))
+        self.assertEqual(14, self._bst.search(4))
+        self.assertEqual(29, self._bst.search(5))
+        self.assertEqual(7, self._bst.search(6))
+        self.assertEqual(15, self._bst.search(7))
 
-        self.assertEqual('NOT found', self._bst.searchKey(-1))
-        self.assertEqual('NOT found', self._bst.searchKey(0))
-        self.assertEqual('NOT found', self._bst.searchKey(100))
-        self.assertEqual('NOT found', self._bst.searchKey(10000))
-        self.assertEqual('NOT found', self._bst.searchKey(-1000))
-        self.assertEqual('NOT found', self._bst.searchKey(-0))
+        self.assertEqual(0, self._bst.search(-1))
+        self.assertEqual(0, self._bst.search(0))
+        self.assertEqual(0, self._bst.search(100))
+        self.assertEqual(0, self._bst.search(10000))
+        self.assertEqual(0, self._bst.search(-1000))
+        self.assertEqual(0, self._bst.search(-0))
+
+    def test_preorder_1(self) -> None:
+        self.assertEqual('', self._bst.preorder())
+        self._bst.insert(7)
+        self.assertEqual('7', self._bst.preorder())
+        self._bst.insert(7)
+        self.assertEqual('7 7', self._bst.preorder())
+        self._bst.insert(7)
+        self.assertEqual('7 7 7', self._bst.preorder())
+        self._bst.insert(1)
+        self.assertEqual('7 1 7 7', self._bst.preorder())
+        self._bst.insert(2)
+        self.assertEqual('7 1 2 7 7', self._bst.preorder())
+        self._bst.insert(0)
+        self.assertEqual('7 1 0 2 7 7', self._bst.preorder())
+
+    def test_preorder_2(self) -> None:
+        self._bst.insert(2)
+        self._bst.insert(1)
+        self._bst.insert(3)
+        self._bst.insert(6)
+        self._bst.insert(7)
+        self._bst.insert(4)
+        self._bst.insert(5)
+        self.assertEqual('2 1 3 6 4 5 7', self._bst.preorder())
+
+    def test_delete(self) -> None:
+        self._bst.insert(2)
+        self._bst.insert(1)
+        self._bst.insert(3)
+        self._bst.insert(5)
+        self._bst.insert(7)
+
+        self.assertEqual('2->1->3->X->X->X->5->X->X->X->X->X->X->X->7', str(self._bst))
+        self._bst.delete(7)
+        self.assertEqual('2->1->3->X->X->X->5', str(self._bst))
+        self._bst.delete(1)
+        self.assertEqual('2->X->3->X->X->X->5', str(self._bst))
+        self._bst.delete(3)
+        self.assertEqual('2->X->5', str(self._bst))
+        self._bst.delete(2)
+        self.assertEqual('5', str(self._bst))
+        self._bst.delete(5)
+        self.assertEqual('', str(self._bst))
+
+    def test_height_1(self) -> None:
+        self.assertEqual(-1, self._bst.height())
+
+        self._bst.insert(2)
+        self.assertEqual(0, self._bst.height())
+
+        self._bst.insert(1)
+        self.assertEqual(1, self._bst.height())
+
+        self._bst.insert(3)
+        self.assertEqual(1, self._bst.height())
+
+        self._bst.insert(5)
+        self.assertEqual(2, self._bst.height())
+
+        self._bst.insert(7)
+        self.assertEqual(3, self._bst.height())
+
+    def test_height_2(self) -> None:
+        self._bst.insert(2)
+        self._bst.insert(1)
+        self._bst.insert(3)
+        self._bst.insert(6)
+        self._bst.insert(7)
+        self.assertEqual(3, self._bst.height())
+
+        self._bst.insert(4)
+        self.assertEqual(3, self._bst.height())
+
+        self._bst.insert(5)
+        self.assertEqual(4, self._bst.height())
+
+    # def test_postorder_1(self) -> None:
+    #     self.assertEqual('', self._bst.postorder())
+    #     self._bst.insert(7)
+    #     self.assertEqual('7', self._bst.postorder())
+    #     self._bst.insert(7)
+    #     self.assertEqual('7 7', self._bst.postorder())
+    #     self._bst.insert(7)
+    #     self.assertEqual('7 7 7', self._bst.postorder())
+    #     self._bst.insert(1)
+    #     self.assertEqual('1 7 7 7', self._bst.postorder())
+    #     self._bst.insert(2)
+    #     self.assertEqual('2 1 7 2 7', self._bst.postorder())
+    #     self._bst.insert(0)
+    #     self.assertEqual('0 2 1 7 2 7', self._bst.postorder())
