@@ -1,4 +1,3 @@
-
 # you may need Python math Module, https://docs.python.org/3/library/math.html
 import math
 from typing import List
@@ -11,6 +10,12 @@ class BinarySearchTree:
 
     # reuqested operation 1
     def insert(self, key: int) -> None:
+        """
+        @time
+            O(n), where n is the size of BST.
+            worst case occurs when the BST is unbalanced
+        """
+
         i: int = 1
         while i < len(self._base_arr):  # len needs to be at least i + 1
             if self._base_arr[i] == 'X':
@@ -37,6 +42,9 @@ class BinarySearchTree:
     def searchKey(self, key: int) -> str:
         """
         return {key} is found if is found, otherwise NOT found
+        @time
+            O(n), where n is the size of BST.
+            worst case occurs when the BST is unbalanced
         """
 
         i: int = 1
@@ -64,26 +72,29 @@ class BinarySearchTree:
 
     # reuqested operation 7
     def inorderTraversal(self) -> str:
+        """
+        @time
+            O(n), where n is the size of BST.
+        """
         # cast to str in-order, filter 'X'
         inorder_list: List[str] = list('')
         # to do iterative traversal, we need a stack to help, which stores the index
         stack: List[int] = list()
         i: int = 1  # start from root
-        # flag used to check if go deeper is possible
-        valid_i_flag: bool = i < len(self._base_arr) and self._base_arr[i] != 'X'
-        while len(stack) or valid_i_flag:
+        while True:
             # If something at i, put in the stack and go right.
-            if valid_i_flag:
+            if i < len(self._base_arr) and self._base_arr[i] != 'X':
                 stack.append(i)
                 i *= 2
             # If nothing at i, go back to visit the parent, which means pop,
             # and go down to left.
-            else:
+            elif len(stack):
                 i = stack.pop()
                 inorder_list.append(str(self._base_arr[i]))
                 i = i * 2 + 1
-
-            valid_i_flag = i < len(self._base_arr) and self._base_arr[i] != 'X'
+            # both stack and BST are over
+            else:
+                break
 
         return ' '.join(inorder_list)
 
@@ -91,6 +102,8 @@ class BinarySearchTree:
     def __str__(self) -> str:
         """
         link keys with '->'
+        @time
+            O(N), where N is the size of base array.
         """
         # empty tree
         if self._base_arr[1] == 'X':
