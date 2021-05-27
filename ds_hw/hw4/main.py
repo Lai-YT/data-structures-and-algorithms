@@ -1,5 +1,6 @@
 from binary_search_tree import *
 
+# tests from the homework
 
 # initializing a BST
 def test_1(tree: BinarySearchTree) -> None:

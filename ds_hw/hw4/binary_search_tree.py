@@ -41,26 +41,26 @@ class BinarySearchTree:
     # reuqested operation 5
     def preorderTraversal(self) -> None:
         print('Preorder of T : ', end='')
-        preorder_str: str = self._bst.preorder()
-        if not preorder_str:
+        preorder_list: List[int] = self._bst.preorder()
+        if not preorder_list:
             print('Tree T is empty')
         else:
-            print(preorder_str)
+            print(' '.join(map(str, preorder_list)))
 
     # reuqested operation 6
     def postorderTraversal(self) -> None:
         print('Postorder of T: ', end='')
-        postorder_str: str = self._bst.postorder()
-        if not postorder_str:
+        postorder_list: List[int] = self._bst.postorder()
+        if not postorder_list:
             print('Tree T is empty')
         else:
-            print(postorder_str)
+            print(' '.join(map(str, postorder_list)))
 
     # reuqested operation 7
     def inorderTraversal(self) -> None:
         print('Inorder of T  : ', end='')
-        inorder_str: str = self._bst.inorder()
-        if not inorder_str:
+        inorder_list: List[int] = self._bst.inorder()
+        if not inorder_list:
             print('Tree T is empty')
         else:
-            print(inorder_str)
+            print(' '.join(map(str, inorder_list)))

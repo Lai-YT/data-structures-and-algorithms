@@ -2,8 +2,21 @@ from math import floor, log2
 from typing import List
 
 
-# This is an array-base(Python List) Binary Search Tree(BST).
 class BST:
+    """This is an array-based(Python List) Binary Search Tree(BST).
+    @operation(param type) -- return type, worst case time complexity
+        insert(key: int) -- None, O(h)
+        delete(key: int) -- None, O(2^n)
+        search(key: int) -- index: int, O(h)
+        height() -- int, O(1)
+        size() -- int, O(1)
+        empty() -- bool, O(1)
+        preorder() -- List[key: int], O(n)
+        postorder() -- List[key: int], O(n)
+        inorder() -- List[key: int], O(n)
+    Where n is the size and h is the heigth of BST.
+    """
+
     def __init__(self):
         # index 0 is not used, the root node is now nothing ('X')
         self._base_arr: List[int or str] = [0, 'X']
@@ -62,10 +75,11 @@ class BST:
             We do Case 1 recursively until we reach Case 2, which is the base case.
 
         @time
-            O(N), where N is the length of base array.
-            Worst case occurs when all 'X' except root after deletion.
+            O(2^n), where n is the size of BST.
+            Worst case occurs when BST is unbalance,
+            about half size of the base array.
 
-            O(h), except the removal of 'X's we have a order of h,
+            O(h), except the removal of 'X's we have an order of h,
             where h is the height of BST.
         """
         # step 1: find the target node to delete
@@ -154,19 +168,18 @@ class BST:
             O(n), where n is the size of BST,
             since we take a traversal.
         """
-        # Split an empty str by ' ' gets [''], which has length 1.
-        if self.empty():
-            return 0
         # number of nodes in the pre-order list
-        return len(self.preorder().split(' '))
+        return len(self.preorder())
 
-    def preorder(self) -> str:
+    def preorder(self) -> List[int]:
         """
+        @return
+            List of keys in pre-order traversal.
         @time
             O(n), where n is the size of BST.
         """
         # cast to str pre-order, filter 'X'
-        preorder_list: List[str] = list('')
+        preorder_list: List[int] = list()
         # to do iterative traversal, we need a stack to help, which stores the index
         stack: List[int] = [1]  # start from root
         # If the stack is empty, the traversal is over.
@@ -174,22 +187,23 @@ class BST:
             i: int = stack.pop()
             # visit if something at i
             if self._node_exist(i):
-                preorder_list.append(str(self._base_arr[i]))
+                preorder_list.append(self._base_arr[i])
                 # to let left be visited before right, append right first(stack is LIFO)
                 stack.append(i * 2 + 1)
                 stack.append(i * 2)
             # else: pass
                 # skip if nothing at i
 
-        return ' '.join(preorder_list)
+        return preorder_list
 
-    def postorder(self) -> str:
+    def postorder(self) -> List[int]:
         """
+        @return
+            List of keys in post-order traversal.
         @time
             O(n), where n is the size of BST.
         """
-        # cast to str post-order, filter 'X'
-        postorder_list: List[str] = list('')
+        postorder_list: List[int] = list()
 
         def _recur_post(i: int) -> None:
             """
@@ -201,20 +215,21 @@ class BST:
                 _recur_post(i * 2)
             if self._node_exist(i * 2 + 1):
                 _recur_post(i * 2 + 1)
-            postorder_list.append(str(self._base_arr[i]))
+            postorder_list.append(self._base_arr[i])
         # end _recur_post
 
         if not self.empty():
             _recur_post(1)
-        return ' '.join(postorder_list)
+        return postorder_list
 
-    def inorder(self) -> str:
+    def inorder(self) -> List[int]:
         """
+        @return
+            List of keys in in-order traversal.
         @time
             O(n), where n is the size of BST.
         """
-        # cast to str in-order, filter 'X'
-        inorder_list: List[str] = list('')
+        inorder_list: List[int] = list()
         # to do iterative traversal, we need a stack to help, which stores the index
         stack: List[int] = list()
         i: int = 1  # start from root
@@ -227,19 +242,19 @@ class BST:
             # and go down to left.
             elif len(stack):
                 i = stack.pop()
-                inorder_list.append(str(self._base_arr[i]))
+                inorder_list.append(self._base_arr[i])
                 i = i * 2 + 1
             # both stack and BST are over
             else:
                 break
 
-        return ' '.join(inorder_list)
+        return inorder_list
 
     def __str__(self) -> str:
         """
         link keys with '->'
         @time
-            O(N), where N is the length of base array.
+            O(2^n), where n is the size of BST.
         """
         # empty tree
         if self.empty():
