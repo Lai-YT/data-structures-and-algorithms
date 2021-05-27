@@ -96,7 +96,7 @@ class BinarySearchTreeTestCase(unittest.TestCase):
         self._bst.insert(5)
         self.assertEqual('2 1 3 6 4 5 7', self._bst.preorder())
 
-    def test_delete(self) -> None:
+    def test_delete_1(self) -> None:
         self._bst.insert(2)
         self._bst.insert(1)
         self._bst.insert(3)
@@ -114,6 +114,29 @@ class BinarySearchTreeTestCase(unittest.TestCase):
         self.assertEqual('5', str(self._bst))
         self._bst.delete(5)
         self.assertEqual('', str(self._bst))
+
+    def test_delete_2(self) -> None:
+        self._bst.insert(6)
+        self._bst.insert(1)
+        self._bst.insert(5)
+        self._bst.insert(3)
+        self._bst.insert(2)
+        self._bst.insert(4)
+
+        self._bst.delete(6)
+        self.assertEqual('1 2 3 4 5', self._bst.inorder())
+
+    # zig-zag BST
+    def test_delete_3(self) -> None:
+        self._bst.insert(35)
+        self._bst.insert(45)
+        self._bst.insert(40)
+        self._bst.insert(43)
+        self._bst.insert(41)
+        self._bst.insert(42)
+
+        self._bst.delete(40)
+        self.assertEqual('35 41 42 43 45', self._bst.inorder())
 
     def test_height_1(self) -> None:
         self.assertEqual(-1, self._bst.height())

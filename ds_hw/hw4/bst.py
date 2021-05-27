@@ -25,8 +25,7 @@ class BST:
     def insert(self, key: int) -> None:
         """
         @time
-            O(n), where n is the size of BST.
-            Worst case occurs when the BST is unbalanced.
+            O(h), where h is the height of BST.
         """
 
         i: int = 1
@@ -47,32 +46,61 @@ class BST:
             self._base_arr.extend(['X' for _ in range(len(self._base_arr), i + 1)])
             self._base_arr[i] = key
 
-    def delete(self, key: int) -> None:
+    # Directly pass the index i if you know where the key is.
+    # KW parameter is used to give us a flavor when recursive call.
+    def delete(self, key: int = None, *, i: int = 0) -> None:
         """
-        Replace by the right-most leaf of the left sub-tree.
+        @technique
+            Case 1:
+            Replace by the right-most node of the left sub-tree as the first choice,
+            left-most of the right sub-tree if only right sub-tree exist.
+            Case 2:
+            If neither left nor right sub-tree exist, we're down at the leaf,
+            deletion is straightforward.
+
+            We do Case 1 recursively until we reach Case 2, which is the base case.
+
         @time
             O(N), where N is the size of base array.
-            Worst case occurs when all "X" except root after deletion.
+            Worst case occurs when all 'X' except root after deletion.
+
+            O(h), except the removal of 'X's we have a order of h,
+            where h is the height of BST.
         """
-
-        target: int = self.search(key)
-
-        if not target:
+        # step 1: find the target node to delete
+        if not i:
+            i = self.search(key)
+        # no such node
+        if not i:
             return
-        replace: int = target
-        while self._node_exist(replace):
-            replace = replace * 2 + 1
-            # go right not exist, go left
-            if not self._node_exist(replace):
-                replace -= 1
-        # because we over downward once
-        replace //= 2
-        # replace
-        self._base_arr[target] = self._base_arr[replace]
-        self._base_arr[replace] = 'X'
-        # remove trailing 'X' to meet the bst shape
-        while len(self._base_arr) > 2 and self._base_arr[-1] == 'X':
-            self._base_arr.pop()
+        # step 2-1: if the left sub-tree exist, get the rightmost one in it to replace with
+        elif self._node_exist(i * 2):
+            # down to left sub-tree
+            replace: int = i * 2
+            # start looking for the rightmost one
+            while self._node_exist(replace * 2 + 1):
+                replace = replace * 2 + 1
+            # replacement
+            self._base_arr[i] = self._base_arr[replace]
+            # we have to call delete recursively because we delete this very 'replace' node
+            self.delete(i=replace)
+        # step 2-2: if the right sub-tree exist, get the leftmost one in it to replace with
+        elif self._node_exist(i * 2 + 1):
+            # down to right sub-tree
+            replace: int = i * 2 + 1
+            # start looking for the leftmost one
+            while self._node_exist(replace * 2):
+                replace = replace * 2
+            # replacement
+            self._base_arr[i] = self._base_arr[replace]
+            # we have to call delete recursively because we delete this very 'replace' node
+            self.delete(i=replace)
+        # last step: target is leaf, just delete it and so finish the deletion
+        else:
+            self._base_arr[i] = 'X'
+            # Remove trailing 'X's, so keep the length of base array as short as possible.
+            while len(self._base_arr) > 2 and self._base_arr[-1] == 'X':
+                self._base_arr.pop()
 
     def search(self, key: int) -> int:
         """
@@ -80,8 +108,7 @@ class BST:
             The smallest index of key if key exist,
             otherwise 0.
         @time
-            O(n), where n is the size of BST.
-            Worst case occurs when the BST is unbalanced.
+            O(h), where h is the height of BST.
         """
 
         i: int = 1
