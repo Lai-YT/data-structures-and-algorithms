@@ -4,16 +4,16 @@ from typing import List
 
 class BST:
     """This is an array-based(Python List) Binary Search Tree(BST).
-    @operation(param type) -- return type, worst case time complexity
-        insert(key: int) -- None, O(h)
-        delete(key: int) -- None, O(2^n)
-        search(key: int) -- index: int, O(h)
-        height() -- int, O(1)
-        size() -- int, O(1)
-        empty() -- bool, O(1)
-        preorder() -- List[key: int], O(n)
-        postorder() -- List[key: int], O(n)
-        inorder() -- List[key: int], O(n)
+    @operation(param type) -- return type,    worst case time complexity
+        insert(key: int)   -- None,           O(h)
+        delete(key: int)   -- None,           O(2^n)
+        search(key: int)   -- index: int,     O(h)
+        height()           -- int,            O(1)
+        size()             -- int,            O(1)
+        empty()            -- bool,           O(1)
+        preorder()         -- List[key: int], O(n)
+        postorder()        -- List[key: int], O(n)
+        inorder()          -- List[key: int], O(n)
     Where n is the size and h is the heigth of BST.
     """
 
