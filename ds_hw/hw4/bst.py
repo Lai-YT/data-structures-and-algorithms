@@ -2,6 +2,7 @@ from math import floor, log2
 from typing import List
 
 
+# This is an array-base(Python List) Binary Search Tree(BST).
 class BST:
     def __init__(self):
         # index 0 is not used, the root node is now nothing ('X')
@@ -61,7 +62,7 @@ class BST:
             We do Case 1 recursively until we reach Case 2, which is the base case.
 
         @time
-            O(N), where N is the size of base array.
+            O(N), where N is the length of base array.
             Worst case occurs when all 'X' except root after deletion.
 
             O(h), except the removal of 'X's we have a order of h,
@@ -122,6 +123,17 @@ class BST:
                 i = i * 2 + 1
         return 0
 
+    # Use as a helper method in many other methods.
+    def empty(self) -> bool:
+        """
+        @return
+            Whether the BST is empty or not.
+        @time
+            O(1)
+        """
+
+        return self._base_arr[1] =='X'
+
     def height(self) -> int:
         """
         @time
@@ -130,11 +142,25 @@ class BST:
         # Since the length base array is always as short as possible,
         # we can calculate the heigh of BST as floor of lg(N),
         # where N is the length of base array (index 0 is not counted).
-        if self._base_arr[1] == 'X':
+        if self.empty():
             return -1
         return floor(log2(len(self._base_arr) - 1))
 
-    def preorder(self):
+    def size(self) -> int:
+        """
+        @return
+            How many keys(nodes) there are in the BST.
+        @time
+            O(n), where n is the size of BST,
+            since we take a traversal.
+        """
+        # Split an empty str by ' ' gets [''], which has length 1.
+        if self.empty():
+            return 0
+        # number of nodes in the pre-order list
+        return len(self.preorder().split(' '))
+
+    def preorder(self) -> str:
         """
         @time
             O(n), where n is the size of BST.
@@ -157,8 +183,30 @@ class BST:
 
         return ' '.join(preorder_list)
 
-    def postorder(self):
-        pass
+    def postorder(self) -> str:
+        """
+        @time
+            O(n), where n is the size of BST.
+        """
+        # cast to str post-order, filter 'X'
+        postorder_list: List[str] = list('')
+
+        def _recur_post(i: int) -> None:
+            """
+            This is an inner helper method used by postorder(),
+            it recursively calls itself to append keys in post-order.
+            """
+
+            if self._node_exist(i * 2):
+                _recur_post(i * 2)
+            if self._node_exist(i * 2 + 1):
+                _recur_post(i * 2 + 1)
+            postorder_list.append(str(self._base_arr[i]))
+        # end _recur_post
+
+        if not self.empty():
+            _recur_post(1)
+        return ' '.join(postorder_list)
 
     def inorder(self) -> str:
         """
@@ -194,7 +242,7 @@ class BST:
             O(N), where N is the length of base array.
         """
         # empty tree
-        if self._base_arr[1] == 'X':
+        if self.empty():
             return ''
 
         string_list: List[str] = list()
