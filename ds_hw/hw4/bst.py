@@ -1,12 +1,14 @@
 from math import floor, log2
 from typing import List
 
+from bst_helper import left_of, right_of
+
 
 class BST:
     """This is an array-based(Python List) Binary Search Tree(BST).
     @operation(param type) -- return type,    worst case time complexity
-        insert(key: int)   -- None,           O(h)
-        delete(key: int)   -- None,           O(2^n)
+        insert(key: int)   -- None,           O(2^h)
+        delete(key: int)   -- None,           O(2^h)
         search(key: int)   -- index: int,     O(h)
         height()           -- int,            O(1)
         size()             -- int,            O(1)
@@ -14,7 +16,7 @@ class BST:
         preorder()         -- List[key: int], O(n)
         postorder()        -- List[key: int], O(n)
         inorder()          -- List[key: int], O(n)
-    Where n is the size and h is the heigth of BST.
+    Where n is the size and h is the height of BST.
     """
 
     def __init__(self):
@@ -29,7 +31,6 @@ class BST:
         @time
             O(1)
         """
-
         return i < len(self._base_arr) and self._base_arr[i] != 'X'
 
     @property
@@ -39,25 +40,29 @@ class BST:
     def insert(self, key: int) -> None:
         """
         @time
-            O(h), where h is the height of BST.
+            O(2^h), where h is the height of BST.
+            This is the time we need to extend a whole new level of 'X'.
+
+            O(h), except the extension, we have an order of h.
         """
 
         i: int = 1
         while i < len(self._base_arr):  # len needs to be at least i + 1
+            # found the place to insert
             if self._base_arr[i] == 'X':
                 self._base_arr[i] = key
-                break
+                return
 
             # If larger than parent, go right.
             # ('=' included so in-order can be stable)
             elif key >= self._base_arr[i]:
-                i = i * 2 + 1
+                i = right_of(i)
             else:
-                i = i * 2
+                i = left_of(i)
         # list too small
         else:
-            # extend to index i (exactly size i + 1), so can add
-            self._base_arr.extend(['X' for _ in range(len(self._base_arr), i + 1)])
+            # extend to index i (exactly size i + 1), so can insert
+            self._base_arr.extend(['X'] * (i + 1 - len(self._base_arr)))
             self._base_arr[i] = key
 
     # Directly pass the index i if you know where the key is.
@@ -75,12 +80,10 @@ class BST:
             We do Case 1 recursively until we reach Case 2, which is the base case.
 
         @time
-            O(2^n), where n is the size of BST.
-            Worst case occurs when BST is unbalance,
-            about half size of the base array.
+            O(2^h), where h is the height of BST.
+            This is the time we need to remove trailing 'X's.
 
-            O(h), except the removal of 'X's we have an order of h,
-            where h is the height of BST.
+            O(h), except the removal, we have an order of h.
         """
         # step 1: find the target node to delete
         if not i:
@@ -89,23 +92,23 @@ class BST:
         if not i:
             return
         # step 2-1: if the left sub-tree exist, get the rightmost one in it to replace with
-        elif self._node_exist(i * 2):
+        elif self._node_exist(left_of(i)):
             # down to left sub-tree
-            replace: int = i * 2
+            replace: int = left_of(i)
             # start looking for the rightmost one
-            while self._node_exist(replace * 2 + 1):
-                replace = replace * 2 + 1
+            while self._node_exist(right_of(replace)):
+                replace = right_of(replace)
             # replacement
             self._base_arr[i] = self._base_arr[replace]
             # we have to call delete recursively because we delete this very 'replace' node
             self.delete(i=replace)
         # step 2-2: if the right sub-tree exist, get the leftmost one in it to replace with
-        elif self._node_exist(i * 2 + 1):
+        elif self._node_exist(right_of(i)):
             # down to right sub-tree
-            replace: int = i * 2 + 1
+            replace: int = right_of(i)
             # start looking for the leftmost one
-            while self._node_exist(replace * 2):
-                replace = replace * 2
+            while self._node_exist(left_of(replace)):
+                replace = left_of(replace)
             # replacement
             self._base_arr[i] = self._base_arr[replace]
             # we have to call delete recursively because we delete this very 'replace' node
@@ -132,9 +135,9 @@ class BST:
                 return i
             # BST property
             if self._base_arr[i] > key:
-                i *= 2
+                i = left_of(i)
             else:
-                i = i * 2 + 1
+                i = right_of(i)
         return 0
 
     # Use as a helper method in many other methods.
@@ -145,7 +148,6 @@ class BST:
         @time
             O(1)
         """
-
         return self._base_arr[1] =='X'
 
     def height(self) -> int:
@@ -153,8 +155,8 @@ class BST:
         @time
             O(1)
         """
-        # Since the length base array is always as short as possible,
-        # we can calculate the heigh of BST as floor of lg(N),
+        # Since the length of base array is always as short as possible,
+        # we can calculate the height of BST as floor of lg(N),
         # where N is the length of base array (index 0 is not counted).
         if self.empty():
             return -1
@@ -178,7 +180,7 @@ class BST:
         @time
             O(n), where n is the size of BST.
         """
-        # cast to str pre-order, filter 'X'
+
         preorder_list: List[int] = list()
         # to do iterative traversal, we need a stack to help, which stores the index
         stack: List[int] = [1]  # start from root
@@ -189,8 +191,8 @@ class BST:
             if self._node_exist(i):
                 preorder_list.append(self._base_arr[i])
                 # to let left be visited before right, append right first(stack is LIFO)
-                stack.append(i * 2 + 1)
-                stack.append(i * 2)
+                stack.append(right_of(i))
+                stack.append(left_of(i))
             # else: pass
                 # skip if nothing at i
 
@@ -203,6 +205,7 @@ class BST:
         @time
             O(n), where n is the size of BST.
         """
+
         postorder_list: List[int] = list()
 
         def _recur_post(i: int) -> None:
@@ -211,10 +214,10 @@ class BST:
             it recursively calls itself to append keys in post-order.
             """
 
-            if self._node_exist(i * 2):
-                _recur_post(i * 2)
-            if self._node_exist(i * 2 + 1):
-                _recur_post(i * 2 + 1)
+            if self._node_exist(left_of(i)):
+                _recur_post(left_of(i))
+            if self._node_exist(right_of(i)):
+                _recur_post(right_of(i))
             postorder_list.append(self._base_arr[i])
         # end _recur_post
 
@@ -229,21 +232,19 @@ class BST:
         @time
             O(n), where n is the size of BST.
         """
+
         inorder_list: List[int] = list()
         # to do iterative traversal, we need a stack to help, which stores the index
         stack: List[int] = list()
         i: int = 1  # start from root
         while True:
-            # If something at i, put in the stack and go right.
             if self._node_exist(i):
                 stack.append(i)
-                i *= 2
-            # If nothing at i, go back to visit the parent, which means pop,
-            # and go down to left.
+                i = left_of(i)
             elif len(stack):
                 i = stack.pop()
                 inorder_list.append(self._base_arr[i])
-                i = i * 2 + 1
+                i = right_of(i)
             # both stack and BST are over
             else:
                 break
@@ -256,7 +257,7 @@ class BST:
         @time
             O(2^n), where n is the size of BST.
         """
-        # empty tree
+        
         if self.empty():
             return ''
 
