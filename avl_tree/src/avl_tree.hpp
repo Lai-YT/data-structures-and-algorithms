@@ -1,6 +1,7 @@
 #ifndef AVL_TREE_HPP_
 #define AVL_TREE_HPP_
 
+#include <algorithm>
 #include <stack>
 #include <vector>
 
@@ -68,10 +69,12 @@ public:
       root_ = new Node(data, key);
       return;
     }
+    Node* gra = nullptr;  // for rotation
     Node* par = nullptr;
     Node* cur = root_;
     // find the pos to insert
     while (cur && key != cur->key) {
+      gra = par;
       par = cur;
       if (key < cur->key) {
         cur = cur->left;
@@ -83,13 +86,49 @@ public:
     // if key duplicates, update the data
     if (cur) {
       cur->data = data;
+      return;
     }
-    else if (key < par->key) {
+    if (key < par->key) {
       par->left = new Node(data, key);
+      par->left->parent = par;
     }
     else if (key > par->key) {
       par->right = new Node(data, key);
+      par->right->parent = par;
     }
+    for (cur = par; cur != nullptr; cur = cur->parent) {
+      UpdateHeight_(cur);
+    }
+    // if (!gra) return;
+    // // // The tree is too low that unbalanced condition won't happen.
+    // // while (gra) {
+    //   // left too heavy
+    //   if (BalanceFactor_(gra) > 1) {
+    //     // left-left heavy
+    //     if (par->left) {
+    //       RightRotate_(gra);
+    //     }
+    //     // left-right heavy
+    //     else {
+    //       LeftRotate_(par);
+    //       RightRotate_(gra);
+    //     }
+    //   }
+    //   // right too high
+    //   else if (BalanceFactor_(gra) < -1) {
+    //     // right-right heavy
+    //     if (par->right) {
+    //       LeftRotate_(gra);
+    //     }
+    //     // right-left heavy
+    //     else {
+    //       RightRotate_(par);
+    //       LeftRotate_(gra);
+    //     }
+    //   }
+    //   par = gra;
+    //   gra = gra->parent;
+    // }
   }
 
   AVLTree() = default;
@@ -122,12 +161,44 @@ public:
 
 private:
   int Height_(const Node* const node) const {
-    return node ? node.height : -1;
+    return node ? node->height : -1;
   }
 
   // height left - right
   int BalanceFactor_(const Node* const node) const {
-    return node ? 0 : Height_(node.left) - Height_(node.right);
+    return node ? 0 : Height_(node->left) - Height_(node->right);
+  }
+
+  bool IsBalance_(const Node* const node) const {
+    return BalanceFactor_(node) >= -1 && BalanceFactor_(node) <= 1;
+  }
+
+  void UpdateHeight_(Node* const node) {
+    node->height = std::max(Height_(node->left), Height_(node->right)) + 1;
+  }
+
+  void LeftRotate_(Node* node) {
+    Node* right_node = node->right;
+    Node* right_left_node = right_node->left;
+
+    node->right = right_left_node;
+    right_node->left = node;
+
+    // "node" is now under "right_node", so update "node" first.
+    UpdateHeight_(node);
+    UpdateHeight_(right_node);
+  }
+
+  void RightRotate_(Node* node) {
+    Node* left_node = node->left;
+    Node* left_right_node = left_node->right;
+
+    node->left = left_right_node;
+    left_node->right = node;
+
+    // "node" is now under "left_node", so update "node" first.
+    UpdateHeight_(node);
+    UpdateHeight_(left_node);
   }
 
   Node* root_ = nullptr;

@@ -7,6 +7,7 @@ struct TreeNode {
   DataType data;
   KeyType key;
   int height = 0;
+  TreeNode* parent = nullptr;
   TreeNode* left = nullptr;
   TreeNode* right = nullptr;
 
