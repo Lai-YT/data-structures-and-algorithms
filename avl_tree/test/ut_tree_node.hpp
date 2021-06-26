@@ -15,8 +15,8 @@ TEST(TreeNodeTest, ConstructNode) {
 
 TEST(TreeNodeTest, SetNode) {
   TreeNode<std::string> root_node("April", 4),
-                             right_node("May", 5),
-                             left_node("March", 3);
+                        right_node("May", 5),
+                        left_node("March", 3);
   root_node.left = &left_node;
   root_node.right = &right_node;
 
