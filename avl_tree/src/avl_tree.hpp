@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <stack>
 #include <vector>
+#include <iostream>
 
 #include "tree_node.hpp"
 
@@ -12,7 +13,7 @@
 //
 // Supported operations and corresponding time complexities:
 //  Search - O(lgn)
-//  Insert - O(lgn)
+//  Insert - O(lgn) (implicit data update - O(lgn))
 //  Delete - O(lgn)
 //  Traverse - O(n)
 // No duplicate keys in the tree.
@@ -23,7 +24,10 @@ class AVLTree {
   using Node = TreeNode<DataType, KeyType>;
 
 public:
-  Node* Search(const KeyType key) const {
+  // const qualifier is to prevent link-breaking from the outside.
+  // Can't Search and modify the data from the outside.
+  // Use Search(if found) + Insert(new_data, corresponding_key) to update data.
+  const Node* Search(const KeyType key) const {
     Node* cur = root_;
     while (cur) {
       if (key == cur->key) {
@@ -42,10 +46,6 @@ public:
   // In-order traversal. In ascending order with respect to keys.
   std::vector<DataType> Traverse() const {
     std::vector<DataType> res;
-    if (!root_) {
-      return res;
-    }
-    // res.reserve(root_->height);
     std::stack<Node*> s;
     Node* cur = root_;
     // Go left down to leaf and then retrieve. So can touch the left first.
@@ -53,8 +53,7 @@ public:
       if (cur) {
         s.push(cur);  // wait for the retrieval
         cur = cur->left;
-      }
-      else {
+      } else {
         res.push_back(s.top()->data);  // traverse
         cur = s.top()->right;
         s.pop();
@@ -65,70 +64,16 @@ public:
 
   // This is a in-place insertion.
   void Insert(const DataType& data, const KeyType key) {
+    Node* const new_node = new Node(data, key);
     if (!root_) {
-      root_ = new Node(data, key);
+      root_ = new_node;
       return;
     }
-    Node* gra = nullptr;  // for rotation
-    Node* par = nullptr;
-    Node* cur = root_;
-    // find the pos to insert
-    while (cur && key != cur->key) {
-      gra = par;
-      par = cur;
-      if (key < cur->key) {
-        cur = cur->left;
-      }
-      else if (key > cur->key) {
-        cur = cur->right;
-      }
-    }
-    // if key duplicates, update the data
-    if (cur) {
-      cur->data = data;
-      return;
-    }
-    if (key < par->key) {
-      par->left = new Node(data, key);
-      par->left->parent = par;
-    }
-    else if (key > par->key) {
-      par->right = new Node(data, key);
-      par->right->parent = par;
-    }
-    for (cur = par; cur != nullptr; cur = cur->parent) {
-      UpdateHeight_(cur);
-    }
-    // if (!gra) return;
-    // // // The tree is too low that unbalanced condition won't happen.
-    // // while (gra) {
-    //   // left too heavy
-    //   if (BalanceFactor_(gra) > 1) {
-    //     // left-left heavy
-    //     if (par->left) {
-    //       RightRotate_(gra);
-    //     }
-    //     // left-right heavy
-    //     else {
-    //       LeftRotate_(par);
-    //       RightRotate_(gra);
-    //     }
-    //   }
-    //   // right too high
-    //   else if (BalanceFactor_(gra) < -1) {
-    //     // right-right heavy
-    //     if (par->right) {
-    //       LeftRotate_(gra);
-    //     }
-    //     // right-left heavy
-    //     else {
-    //       RightRotate_(par);
-    //       LeftRotate_(gra);
-    //     }
-    //   }
-    //   par = gra;
-    //   gra = gra->parent;
-    // }
+    root_ = RecursiveInsert_(root_, new_node);
+  }
+
+  int Height() const {
+    return Height_(root_);
   }
 
   AVLTree() = default;
@@ -166,7 +111,7 @@ private:
 
   // height left - right
   int BalanceFactor_(const Node* const node) const {
-    return node ? 0 : Height_(node->left) - Height_(node->right);
+    return node ? Height_(node->left) - Height_(node->right) : 0;
   }
 
   bool IsBalance_(const Node* const node) const {
@@ -177,7 +122,58 @@ private:
     node->height = std::max(Height_(node->left), Height_(node->right)) + 1;
   }
 
-  void LeftRotate_(Node* node) {
+  Node* RecursiveInsert_(Node* const node, Node* const new_node) {
+    // if key duplicates, just update the data
+    if (new_node->key == node->key) {
+      node->data = new_node->data;
+      delete new_node;
+      return node;
+    }
+    if (new_node->key < node->key) {
+      if (node->left) {
+        node->left = RecursiveInsert_(node->left, new_node);
+      } else {
+        node->left = new_node;
+      }
+    }
+    else if (new_node->key > node->key) {
+      if (node->right) {
+        node->right = RecursiveInsert_(node->right, new_node);
+      } else {
+        node->right = new_node;
+      }
+    }
+    UpdateHeight_(node);
+    return MakeBalance_(node);
+  }
+
+  Node* MakeBalance_(Node* const node) {
+    // left too heavy
+    if (BalanceFactor_(node) > 1) {
+      // left-left heavy
+      if (node->left->left) {
+        return RightRotate_(node);
+      }
+      else {  // left-right heavy
+        node->left = LeftRotate_(node->left);
+        return RightRotate_(node);
+      }
+    }
+    // right too high
+    else if (BalanceFactor_(node) < -1) {
+      // right-right heavy
+      if (node->right->right) {
+        return LeftRotate_(node);
+      }
+      else {  // right-left heavy
+        node->right = RightRotate_(node->right);
+        return LeftRotate_(node);
+      }
+    }
+    return node;
+  }
+
+  Node* LeftRotate_(Node* const node) {
     Node* right_node = node->right;
     Node* right_left_node = right_node->left;
 
@@ -187,9 +183,11 @@ private:
     // "node" is now under "right_node", so update "node" first.
     UpdateHeight_(node);
     UpdateHeight_(right_node);
+
+    return right_node;
   }
 
-  void RightRotate_(Node* node) {
+  Node* RightRotate_(Node* const node) {
     Node* left_node = node->left;
     Node* left_right_node = left_node->right;
 
@@ -199,6 +197,8 @@ private:
     // "node" is now under "left_node", so update "node" first.
     UpdateHeight_(node);
     UpdateHeight_(left_node);
+
+    return left_node;
   }
 
   Node* root_ = nullptr;
