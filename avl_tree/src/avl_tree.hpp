@@ -8,16 +8,6 @@
 
 #include "tree_node.hpp"
 
-// AVL tree is a highly balanced binary search tree.
-// It's height h is less than 1.44lgn, where n is the number of elements.
-//
-// Supported operations and corresponding time complexities:
-//  Search - O(lgn)
-//  Insert - O(lgn) (implicit data update - O(lgn))
-//  Delete - O(lgn)
-//  Traverse - O(n)
-// No duplicate keys in the tree.
-// When inserting, the original TreeNode data will be updated if key duplicates.
 
 template<typename DataType, typename KeyType = int>
 class AVLTree {
@@ -70,6 +60,15 @@ public:
       return;
     }
     root_ = RecursiveInsert_(root_, new_node);
+  }
+
+  // false if try to delete non-existent Node
+  bool Delete(const KeyType key) {
+    if (!Search(key)) {
+      return false;
+    }
+    root_ = RecursiveDelete_(root_, key);
+    return true;
   }
 
   int Height() const {
@@ -147,6 +146,54 @@ private:
     return MakeBalance_(node);
   }
 
+  Node* RecursiveDelete_(Node* node, const KeyType key) {
+    if (key < node->key) {
+      node->left = RecursiveDelete_(node->left, key);
+    }
+    else if (key > node->key) {
+      node->right = RecursiveDelete_(node->right, key);
+    }
+    else {
+      // case 1: is leaf
+      if (!Height_(node)) {
+        delete node;
+        return nullptr;
+      }
+      // case 2: only right, link it up
+      else if (!node->left) {
+        Node* temp = node->right;
+        delete node;
+        return temp;
+      }
+      // case 3: only left, link it up
+      else if (!node->right) {
+        Node* temp = node->left;
+        delete node;
+        return temp;
+      }
+      // case 4: complete node. Swap with the node with biggest key from the left subtree
+      //         and recursively delete it.
+      else {
+        node = SwapWithMax_(node->left, node);
+        node->left = RecursiveDelete_(node->left, node->key);
+      }
+    }
+
+    UpdateHeight_(node);
+    return MakeBalance_(node);
+  }
+
+  Node* SwapWithMax_(Node* node, Node* node_to_delete) {
+    std::cout << "/* message */" << '\n';
+    if (node->right) {
+      node->right = SwapWithMax_(node->right, node_to_delete);
+      return node;
+    }
+    std::swap(node->left, node_to_delete->left);
+    std::swap(node->right, node_to_delete->right);
+    return node_to_delete;
+  }
+
   Node* MakeBalance_(Node* const node) {
     // left too heavy
     if (BalanceFactor_(node) > 1) {
@@ -200,6 +247,7 @@ private:
 
     return left_node;
   }
+
 
   Node* root_ = nullptr;
 

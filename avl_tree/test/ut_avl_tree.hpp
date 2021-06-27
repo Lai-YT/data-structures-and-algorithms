@@ -119,3 +119,55 @@ TEST_F(AVLTreeTest, Height) {
   // Should be 1.44, but to neglect other coefficients.
   ASSERT_TRUE(tree.Height() < 1.5 * log2(100000));
 }
+
+TEST_F(AVLTreeTest, Delete_1) {
+  month_tree_.Delete(1);
+  month_tree_.Delete(4);
+  month_tree_.Delete(7);
+  month_tree_.Delete(11);
+
+  ASSERT_EQ(nullptr,     month_tree_.Search(1));
+  ASSERT_EQ("February",  month_tree_.Search(2)->data);
+  ASSERT_EQ("March",     month_tree_.Search(3)->data);
+  ASSERT_EQ(nullptr,     month_tree_.Search(4));
+  ASSERT_EQ("May",       month_tree_.Search(5)->data);
+  ASSERT_EQ("June",      month_tree_.Search(6)->data);
+  ASSERT_EQ(nullptr,     month_tree_.Search(7));
+  ASSERT_EQ("August",    month_tree_.Search(8)->data);
+  ASSERT_EQ("September", month_tree_.Search(9)->data);
+  ASSERT_EQ("October",   month_tree_.Search(10)->data);
+  ASSERT_EQ(nullptr,     month_tree_.Search(11));
+  ASSERT_EQ("December",  month_tree_.Search(12)->data);
+}
+
+TEST_F(AVLTreeTest, Delete_2) {
+  AVLTree<int> tree;
+  tree.Insert(5, 5);
+  tree.Insert(3, 3);
+  tree.Insert(6, 6);
+  tree.Insert(2, 2);
+  tree.Insert(4, 4);
+
+  tree.Delete(5);
+
+  const std::vector<int> tree_order = tree.Traverse();
+  ASSERT_EQ(2, tree_order.at(0));
+  ASSERT_EQ(3, tree_order.at(1));
+  ASSERT_EQ(4, tree_order.at(2));
+  ASSERT_EQ(6, tree_order.at(6));
+}
+
+TEST_F(AVLTreeTest, Delete_3) {
+  AVLTree<int> tree;
+  tree.Insert(5, 5);
+  tree.Insert(3, 3);
+  tree.Insert(6, 6);
+  tree.Insert(2, 2);
+
+  tree.Delete(5);
+
+  const std::vector<int> tree_order = tree.Traverse();
+  ASSERT_EQ(2, tree_order.at(0));
+  ASSERT_EQ(3, tree_order.at(1));
+  ASSERT_EQ(6, tree_order.at(2));
+}
