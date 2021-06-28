@@ -44,9 +44,10 @@ public:
         s.push(cur);  // wait for the retrieval
         cur = cur->left;
       } else {
-        res.push_back(s.top()->data);  // traverse
-        cur = s.top()->right;
+        Node* temp = s.top();
         s.pop();
+        res.push_back(temp->data);  // traverse
+        cur = temp->right;
       }
     }
     return res;
@@ -113,10 +114,6 @@ private:
     return node ? Height_(node->left) - Height_(node->right) : 0;
   }
 
-  bool IsBalance_(const Node* const node) const {
-    return BalanceFactor_(node) >= -1 && BalanceFactor_(node) <= 1;
-  }
-
   void UpdateHeight_(Node* const node) {
     node->height = std::max(Height_(node->left), Height_(node->right)) + 1;
   }
@@ -171,27 +168,24 @@ private:
         delete node;
         return temp;
       }
-      // case 4: complete node. Swap with the node with biggest key from the left subtree
-      //         and recursively delete it.
+      // case 4: complete node. Let the node with biggest key from the left subtree
+      //         up and recursively delete it.
       else {
-        node = SwapWithMax_(node->left, node);
-        node->left = RecursiveDelete_(node->left, node->key);
+        Node* predecessor = GetNodeWithMaxKey_(node->left);
+        node->data = predecessor->data;
+        node->key = predecessor->key;
+        node->left = RecursiveDelete_(node->left, predecessor->key);
       }
     }
-
     UpdateHeight_(node);
     return MakeBalance_(node);
   }
 
-  Node* SwapWithMax_(Node* node, Node* node_to_delete) {
-    std::cout << "/* message */" << '\n';
-    if (node->right) {
-      node->right = SwapWithMax_(node->right, node_to_delete);
-      return node;
+  Node* GetNodeWithMaxKey_(Node* root) const {
+    if (root->right) {
+      root = root->right;
     }
-    std::swap(node->left, node_to_delete->left);
-    std::swap(node->right, node_to_delete->right);
-    return node_to_delete;
+    return root;
   }
 
   Node* MakeBalance_(Node* const node) {

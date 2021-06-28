@@ -25,6 +25,7 @@ protected:
   }
 
   AVLTree<std::string> month_tree_;
+  AVLTree<int> tree_;
 };
 
 TEST_F(AVLTreeTest, Insert) {
@@ -64,60 +65,61 @@ TEST_F(AVLTreeTest, Search) {
 }
 
 TEST_F(AVLTreeTest, LeftRotate) {
-  AVLTree<int> tree;
   for (int i = 0; i < 10; ++i) {
-    tree.Insert(i, i);
+    tree_.Insert(i, i);
   }
-  const std::vector<int> tree_order = tree.Traverse();
+  const std::vector<int> tree_order = tree_.Traverse();
   for (int i = 0; i < 10; ++i) {
     ASSERT_EQ(i, tree_order.at(i));
   }
 }
 
 TEST_F(AVLTreeTest, RightRotate) {
-  AVLTree<int> tree;
   for (int i = 9; i >= 0; --i) {
-    tree.Insert(i, i);
+    tree_.Insert(i, i);
   }
-  const std::vector<int> tree_order = tree.Traverse();
+  const std::vector<int> tree_order = tree_.Traverse();
   for (int i = 0; i < 10; ++i) {
     ASSERT_EQ(i, tree_order.at(i));
   }
 }
 
 TEST_F(AVLTreeTest, LeftRightRotate) {
-  AVLTree<int> tree;
-  tree.Insert(10, 10);
-  tree.Insert(8, 8);
-  tree.Insert(9, 9);
-  const std::vector<int> tree_order = tree.Traverse();
+  tree_.Insert(10, 10);
+  tree_.Insert(8, 8);
+  tree_.Insert(9, 9);
+
+  const std::vector<int> tree_order = tree_.Traverse();
+  ASSERT_EQ(3, tree_order.size());
+
   ASSERT_EQ(8, tree_order.at(0));
   ASSERT_EQ(9, tree_order.at(1));
   ASSERT_EQ(10, tree_order.at(2));
 }
 
 TEST_F(AVLTreeTest, RightLeftRotate) {
-  AVLTree<int> tree;
-  tree.Insert(10, 10);
-  tree.Insert(12, 12);
-  tree.Insert(11, 11);
-  const std::vector<int> tree_order = tree.Traverse();
+  tree_.Insert(10, 10);
+  tree_.Insert(12, 12);
+  tree_.Insert(11, 11);
+
+  const std::vector<int> tree_order = tree_.Traverse();
+  ASSERT_EQ(3, tree_order.size());
+
   ASSERT_EQ(10, tree_order.at(0));
   ASSERT_EQ(11, tree_order.at(1));
   ASSERT_EQ(12, tree_order.at(2));
 }
 
 TEST_F(AVLTreeTest, Height) {
-  AVLTree<int> tree;
   for (int i = 0; i < 100000; ++i) {
-    tree.Insert(i, i);
+    tree_.Insert(i, i);
   }
-  const std::vector<int> tree_order = tree.Traverse();
+  const std::vector<int> tree_order = tree_.Traverse();
   for (int i = 0; i < 100000; ++i) {
     ASSERT_EQ(i, tree_order.at(i));
   }
   // Should be 1.44, but to neglect other coefficients.
-  ASSERT_TRUE(tree.Height() < 1.5 * log2(100000));
+  ASSERT_TRUE(tree_.Height() < 1.5 * log2(100000));
 }
 
 TEST_F(AVLTreeTest, Delete_1) {
@@ -141,33 +143,70 @@ TEST_F(AVLTreeTest, Delete_1) {
 }
 
 TEST_F(AVLTreeTest, Delete_2) {
-  AVLTree<int> tree;
-  tree.Insert(5, 5);
-  tree.Insert(3, 3);
-  tree.Insert(6, 6);
-  tree.Insert(2, 2);
-  tree.Insert(4, 4);
+  tree_.Insert(5, 5);
+  tree_.Insert(3, 3);
+  tree_.Insert(6, 6);
+  tree_.Insert(2, 2);
+  tree_.Insert(4, 4);
 
-  tree.Delete(5);
+  tree_.Delete(5);
 
-  const std::vector<int> tree_order = tree.Traverse();
+  const std::vector<int> tree_order = tree_.Traverse();
+  ASSERT_EQ(4, tree_order.size());
+
   ASSERT_EQ(2, tree_order.at(0));
   ASSERT_EQ(3, tree_order.at(1));
   ASSERT_EQ(4, tree_order.at(2));
-  ASSERT_EQ(6, tree_order.at(6));
+  ASSERT_EQ(6, tree_order.at(3));
 }
 
 TEST_F(AVLTreeTest, Delete_3) {
-  AVLTree<int> tree;
-  tree.Insert(5, 5);
-  tree.Insert(3, 3);
-  tree.Insert(6, 6);
-  tree.Insert(2, 2);
+  tree_.Insert(5, 5);
+  tree_.Insert(3, 3);
+  tree_.Insert(6, 6);
+  tree_.Insert(2, 2);
 
-  tree.Delete(5);
+  tree_.Delete(5);
 
-  const std::vector<int> tree_order = tree.Traverse();
+  const std::vector<int> tree_order = tree_.Traverse();
+  ASSERT_EQ(3, tree_order.size());
+
   ASSERT_EQ(2, tree_order.at(0));
   ASSERT_EQ(3, tree_order.at(1));
   ASSERT_EQ(6, tree_order.at(2));
+}
+
+TEST_F(AVLTreeTest, Delete_4) {
+  for (int i = 0; i < 1000; ++i) {
+    tree_.Insert(i, i);
+  }
+  const std::vector<int> tree_order_before_delete = tree_.Traverse();
+  for (int prev = 0, cur = 1; cur < tree_order_before_delete.size(); ++prev, ++cur) {
+    ASSERT_TRUE(tree_order_before_delete.at(prev) < tree_order_before_delete.at(cur));
+  }
+  for (int i = 7; i < 1000; i += 7) {
+    tree_.Delete(i);
+  }
+  const std::vector<int> tree_order = tree_.Traverse();
+  ASSERT_EQ(858, tree_order.size());
+
+  bool fail_flag = false;
+  for (int prev = 0, cur = 1; cur < tree_order.size(); ++prev, ++cur) {
+    if (tree_order.at(prev) > tree_order.at(cur)) {
+      fail_flag = true;
+      std::cout << "at(" << prev << ") = " << tree_order.at(prev) << ", "
+                << "at(" << cur  << ") = " << tree_order.at(cur)  << '\n';
+    }
+  }
+  ASSERT_FALSE(fail_flag);
+  // int count = 0;
+  // for (auto i : tree_order) {
+  //   std::cout << i;
+  //   if (++count % 10) {
+  //     std::cout << ' ';
+  //   } else {
+  //     std::cout << '\n';
+  //   }
+  // }
+  // std::cout << '\n';
 }

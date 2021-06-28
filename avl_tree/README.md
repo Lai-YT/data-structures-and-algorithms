@@ -11,4 +11,4 @@ Supported operations and corresponding time complexities:
 - Height   - O(1)
 
 When inserting, the original TreeNode data will be updated if key duplicates. \
-So duplicate keys in the tree.
+So no duplicate keys in the tree.

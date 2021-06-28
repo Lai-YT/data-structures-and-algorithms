@@ -5,7 +5,7 @@
 template<typename DataType, typename KeyType = int>
 struct TreeNode {
   DataType data;
-  const KeyType key;
+  KeyType key;
   int height = 0;
   TreeNode* left = nullptr;
   TreeNode* right = nullptr;
