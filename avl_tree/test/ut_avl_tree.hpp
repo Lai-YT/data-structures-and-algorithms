@@ -9,7 +9,7 @@
 class AVLTreeTest : public ::testing::Test {
 protected:
   void SetUp() override {
-    ASSERT_EQ(0, TreeNode<std::string>::count);
+    ASSERT_EQ(0, TreeNode<std::string>::leak_count);
     month_tree_.Insert("June", 6);
     month_tree_.Insert("March", 3);
     month_tree_.Insert("September", 9);
@@ -177,12 +177,32 @@ TEST_F(AVLTreeTest, Delete_3) {
 }
 
 TEST_F(AVLTreeTest, Delete_4) {
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 0; i < 100; ++i) {
     tree_.Insert(i, i);
   }
-  const std::vector<int> tree_order_before_delete = tree_.Traverse();
-  for (int prev = 0, cur = 1; cur < tree_order_before_delete.size(); ++prev, ++cur) {
-    ASSERT_TRUE(tree_order_before_delete.at(prev) < tree_order_before_delete.at(cur));
+  for (int i = 7; i < 100; i += 7) {
+    tree_.Delete(i);
+  }
+  const std::vector<int> tree_order = tree_.Traverse();
+  ASSERT_EQ(86, tree_order.size());
+
+  for (int prev = 0, cur = 1; cur < tree_order.size(); ++prev, ++cur) {
+    ASSERT_TRUE(tree_order.at(prev) < tree_order.at(cur));
+  }
+  // bool fail_flag = false;
+  // for (int prev = 0, cur = 1; cur < tree_order.size(); ++prev, ++cur) {
+  //   if (tree_order.at(prev) > tree_order.at(cur)) {
+  //     fail_flag = true;
+  //     std::cout << "at(" << prev << ") = " << tree_order.at(prev) << ", "
+  //               << "at(" << cur  << ") = " << tree_order.at(cur)  << '\n';
+  //   }
+  // }
+  // ASSERT_FALSE(fail_flag);
+}
+
+TEST_F(AVLTreeTest, Delete_5) {
+  for (int i = 0; i < 1000; ++i) {
+    tree_.Insert(i, i);
   }
   for (int i = 7; i < 1000; i += 7) {
     tree_.Delete(i);
@@ -190,23 +210,7 @@ TEST_F(AVLTreeTest, Delete_4) {
   const std::vector<int> tree_order = tree_.Traverse();
   ASSERT_EQ(858, tree_order.size());
 
-  bool fail_flag = false;
   for (int prev = 0, cur = 1; cur < tree_order.size(); ++prev, ++cur) {
-    if (tree_order.at(prev) > tree_order.at(cur)) {
-      fail_flag = true;
-      std::cout << "at(" << prev << ") = " << tree_order.at(prev) << ", "
-                << "at(" << cur  << ") = " << tree_order.at(cur)  << '\n';
-    }
+    ASSERT_TRUE(tree_order.at(prev) < tree_order.at(cur));
   }
-  ASSERT_FALSE(fail_flag);
-  // int count = 0;
-  // for (auto i : tree_order) {
-  //   std::cout << i;
-  //   if (++count % 10) {
-  //     std::cout << ' ';
-  //   } else {
-  //     std::cout << '\n';
-  //   }
-  // }
-  // std::cout << '\n';
 }

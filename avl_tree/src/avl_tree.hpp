@@ -2,12 +2,15 @@
 #define AVL_TREE_HPP_
 
 #include <algorithm>
-#include <stack>
-#include <vector>
 #include <iostream>
+#include <stack>
+#include <utility>
+#include <vector>
 
 #include "tree_node.hpp"
 
+// Incorrect order occurs after Delete,
+// but unable to find out what's wrong.
 
 template<typename DataType, typename KeyType = int>
 class AVLTree {
@@ -36,21 +39,8 @@ public:
   // In-order traversal. In ascending order with respect to keys.
   std::vector<DataType> Traverse() const {
     std::vector<DataType> res;
-    std::stack<Node*> s;
-    Node* cur = root_;
-    // Go left down to leaf and then retrieve. So can touch the left first.
-    while (cur || !s.empty()) {
-      if (cur) {
-        s.push(cur);  // wait for the retrieval
-        cur = cur->left;
-      } else {
-        Node* temp = s.top();
-        s.pop();
-        res.push_back(temp->data);  // traverse
-        cur = temp->right;
-      }
-    }
-    return res;
+    RecursiveTraverse_(root_, res);
+    return std::move(res);
   }
 
   // This is a in-place insertion.
@@ -186,6 +176,15 @@ private:
       root = root->right;
     }
     return root;
+  }
+
+  void RecursiveTraverse_(const Node* const node, std::vector<DataType>& res) const {
+    if (!node) {
+      return;
+    }
+    RecursiveTraverse_(node->left, res);
+    res.push_back(node->data);
+    RecursiveTraverse_(node->right, res);
   }
 
   Node* MakeBalance_(Node* const node) {

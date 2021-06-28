@@ -12,21 +12,21 @@ struct TreeNode {
 
   TreeNode(const DataType& data, const KeyType key)
     :data(data),key(key),height(0) {
-    ++count;
+    ++leak_count;
   }
 
   ~TreeNode() {
-    --count;
+    --leak_count;
   }
 
   TreeNode(const TreeNode&) = delete;
   TreeNode& operator= (const TreeNode&) = delete;
 
-  static int count;
+  static int leak_count;
 };
 
 template<typename DataType, typename KeyType>
-int TreeNode<DataType, KeyType>::count = 0;
+int TreeNode<DataType, KeyType>::leak_count = 0;
 
 
 #endif /* end of include guard: TREE_NODE_HPP_ */
