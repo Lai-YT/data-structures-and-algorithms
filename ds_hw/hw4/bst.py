@@ -1,5 +1,5 @@
 from math import floor, log2
-from typing import List
+from typing import List, Union
 
 from bst_helper import left_of, right_of
 
@@ -21,7 +21,7 @@ class BST:
 
     def __init__(self):
         # index 0 is not used, the root node is now nothing ('X')
-        self._base_arr: List[int or str] = [0, 'X']
+        self._base_arr: List[Union[int, str]] = [0, 'X']
 
     def _node_exist(self, i: int) -> bool:
         """
@@ -34,7 +34,7 @@ class BST:
         return i < len(self._base_arr) and self._base_arr[i] != 'X'
 
     @property
-    def base_array(self) -> List[int or str]:
+    def base_array(self) -> List[Union[int, str]]:
         return self._base_arr
 
     def insert(self, key: int) -> None:
@@ -257,7 +257,7 @@ class BST:
         @time
             O(2^n), where n is the size of BST.
         """
-        
+
         if self.empty():
             return ''
 

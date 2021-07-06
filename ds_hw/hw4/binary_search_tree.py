@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from bst import *
 
@@ -11,7 +11,7 @@ class BinarySearchTree:
         self._bst: BST = bst
 
     @property
-    def array(self) -> List[int or str]:
+    def array(self) -> List[Union[int, str]]:
         return self._bst.base_array
 
     # reuqested operation 1
