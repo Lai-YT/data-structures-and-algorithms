@@ -1,10 +1,14 @@
+#ifndef QUEUE_HPP_
+#define QUEUE_HPP_
+
+
 // this is a circular-queue
 template<typename T>
 class Queue {
 public:
   Queue(const int capacity)
-  :capacity_(capacity + 1),front_(0),rear_(0) {
-    q_ = new T[capacity_];
+      : capacity_(capacity + 1), front_(0), rear_(0) {
+    q_ = new T[capacity];
   }
 
   ~Queue() {
@@ -12,15 +16,16 @@ public:
   }
 
   void Enqueue(const T& data) {
-    // is full
-    if (front_ - rear_ == 1) return;
-    q_[rear_] = data;
-    rear_ = (rear_ + 1) % capacity_;
+    if (!IsFull()) {
+      q_[rear_] = data;
+      rear_ = (rear_ + 1) % capacity_;
+    }
   }
 
   void Dequeue() {
-    if (IsEmpty()) return;
-    front_ = (front_ + 1) % capacity_;
+    if (!IsEmpty()) {
+      front_ = (front_ + 1) % capacity_;
+    }
   }
 
   T front() const {
@@ -35,9 +40,16 @@ public:
     return front_ == rear_;
   }
 
+  bool IsFull() const {
+    return front_ - rear_ == 1;
+  }
+
 private:
   T* q_;
   int front_;
   int rear_;
   int capacity_;
 };
+
+
+#endif /* end of include guard: QUEUE_HPP_ */

@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+
 TEST(QueueTest, Enqueue) {
   Queue<int> q(5);
   q.Enqueue(1);
@@ -10,6 +11,7 @@ TEST(QueueTest, Enqueue) {
   ASSERT_EQ(1, q.front());
   ASSERT_EQ(3, q.size());
 }
+
 
 TEST(QueueTest, EnqueueAndDequeue) {
   Queue<int> q(1);
@@ -24,6 +26,7 @@ TEST(QueueTest, EnqueueAndDequeue) {
     ASSERT_TRUE(q.IsEmpty());
   }
 }
+
 
 int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
