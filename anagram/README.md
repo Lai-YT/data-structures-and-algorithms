@@ -9,7 +9,7 @@ this representation is unique, the order of the factors.*"
 
 Assign each letter in the alphabet to a prime number, and group all the prime factorization up as the key. \
 Since prime factorization is unique, this is a good hash function. \
-For the *overflow* problem which happens when a word is long, modulo a large prime.
+To prevent *overflow*, which happens when a word is long, modulo a large prime.
 
 Reference:
 
