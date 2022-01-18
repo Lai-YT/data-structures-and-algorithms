@@ -1,11 +1,13 @@
-#ifndef UT_ANAGRAM_HPP_
-#define UT_ANAGRAM_HPP_
+#ifndef TEST_UT_ANAGRAM_HPP_
+#define TEST_UT_ANAGRAM_HPP_
 
 #include "../anagram.hpp"
 
-#include <cstdint>
+#include <cstdint>  /* uint64_t */
 #include <gtest/gtest.h>
+#include <set>
 #include <string>
+#include <vector>
 
 
 TEST(AnagramTest, HashWord) {
@@ -40,4 +42,30 @@ TEST(AnagramTest, IsAnagramNonAlpha) {
 }
 
 
-#endif /* end of include guard: UT_ANAGRAM_HPP_ */
+TEST(AnagramTest, GetAnagramPairsTwo) {
+  std::vector<std::string> words{
+      "proudest", "stop", "pots", "tops", "sprouted",
+  };
+  std::set<std::set<std::string>> anagram_pairs{
+    {"stop", "pots", "tops"}, {"proudest", "sprouted"},
+  };
+
+  ASSERT_EQ(anagram_pairs, GetAnagramPairs(words));
+}
+
+
+TEST(AnagramTest, GetAnagramPairsThree) {
+  std::vector<std::string> words{
+      "proudest", "stop", "pots", "tops",
+      "Semolina", "is no meal.", "sprouted",
+  };
+  std::set<std::set<std::string>> anagram_pairs{
+    {"stop", "pots", "tops"}, {"proudest", "sprouted"},
+    {"Semolina", "is no meal."},
+  };
+
+  ASSERT_EQ(anagram_pairs, GetAnagramPairs(words));
+}
+
+
+#endif /* end of include guard: TEST_UT_ANAGRAM_HPP_ */
