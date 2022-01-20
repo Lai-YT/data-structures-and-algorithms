@@ -1,7 +1,7 @@
 #ifndef TEST_UT_ANAGRAM_HPP_
 #define TEST_UT_ANAGRAM_HPP_
 
-#include "../anagram.hpp"
+#include "../src/anagram.hpp"
 
 #include <cstdint>  /* uint64_t */
 #include <gtest/gtest.h>
@@ -44,7 +44,7 @@ TEST(AnagramTest, IsAnagramNonAlpha) {
 
 TEST(AnagramTest, GetAnagramPairsTwo) {
   std::vector<std::string> words{
-      "proudest", "stop", "pots", "tops", "sprouted",
+    "proudest", "stop", "pots", "tops", "sprouted",
   };
   std::set<std::set<std::string>> anagram_pairs{
     {"stop", "pots", "tops"}, {"proudest", "sprouted"},
@@ -56,8 +56,8 @@ TEST(AnagramTest, GetAnagramPairsTwo) {
 
 TEST(AnagramTest, GetAnagramPairsThree) {
   std::vector<std::string> words{
-      "proudest", "stop", "pots", "tops",
-      "Semolina", "is no meal.", "sprouted",
+    "proudest", "stop", "pots", "tops",
+    "Semolina", "is no meal.", "sprouted",
   };
   std::set<std::set<std::string>> anagram_pairs{
     {"stop", "pots", "tops"}, {"proudest", "sprouted"},
