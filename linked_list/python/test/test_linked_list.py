@@ -1,20 +1,7 @@
 import unittest
 
-from src.linked_list import LinkedList, Node
-
-
-class NodeTestCase(unittest.TestCase):
-    def setUp(self) -> None:
-        self.node = Node(25)
-
-    def test_value(self) -> None:
-        self.assertEqual(25, self.node.value)
-
-    def test_next(self) -> None:
-        self.node.next = Node(20)
-        next_node = self.node.next
-
-        self.assertEqual(20, next_node.value)
+from src.linked_list import LinkedList
+from src.node import Node
 
 
 class LinkedListTestCase(unittest.TestCase):
