@@ -38,6 +38,21 @@ class LinkedListTestCase(unittest.TestCase):
         node = self.list.find(lambda x: x[1] == 3)
         self.assertIsNone(node)
 
+    def test_remove(self) -> None:
+        for i in range(100):
+            self.list.append(i)
+        # remove all odds
+        for i in range(1, 100, 2):
+            self.list.remove(lambda x: x == i)
+            self.assertIsNone(self.list.find(lambda x: x == i))
+
+    def test_remove_not_exists(self) -> None:
+        for i in range(10):
+            self.list.append(i)
+        # make sure I don't accidentally remove the tail
+        self.list.remove(lambda x: x == 10)
+        self.assertIsNotNone(self.list.find(lambda x: x == 9))
+
     def test_is_empty(self) -> None:
         self.assertTrue(self.list.is_empty())
         self.list.append(0)

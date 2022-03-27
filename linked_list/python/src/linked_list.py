@@ -10,6 +10,7 @@ class LinkedList:
 
     Implements the following operations:
         - append(self, data: T) -> None
+        - remove(self, cond: Callable[[T], bool]) -> None
         - find(self, cond: Callable[[T], bool]) -> Node
     """
 
@@ -33,8 +34,28 @@ class LinkedList:
         # and the new node is now the tail
         self._tail = new_node
 
+    def remove(self, cond: Callable[[T], bool]) -> None:
+        """Removes the first node which has value meet the "cond"-ition.
+
+        This is an O(n) operation.
+        """
+        pre = None
+        tar = self._head
+        while tar is not None and not cond(tar.value):
+            pre = tar
+            tar = tar.next
+
+        # node not found
+        if pre is self._tail:
+            pass
+        # remove head
+        elif tar is self._head:
+            self._head = tar.next
+        else:
+            pre.next = tar.next
+
     def find(self, cond: Callable[[T], bool]) -> Node:
-        """Finds the first node which meets the "cond"ition.
+        """Finds the first node which has value meet the "cond"-ition.
 
         This is an O(n) operation.
         """
