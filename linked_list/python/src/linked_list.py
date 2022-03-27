@@ -18,7 +18,10 @@ class LinkedList:
         self._tail: Node = None
 
     def append(self, data: T) -> None:
-        """Append a new node with "data" as value to the left side of the list."""
+        """Append a new node with "data" as value to the left side of the list.
+
+        This is an O(1) operation.
+        """
         new_node = Node(data)
 
         if self.is_empty():
@@ -31,8 +34,14 @@ class LinkedList:
         self._tail = new_node
 
     def find(self, cond: Callable[[T], bool]) -> Node:
-        """Finds the first node which meets the cond."""
-        pass
+        """Finds the first node which meets the "cond"ition.
+
+        This is an O(n) operation.
+        """
+        node = self._head
+        while node is not None and not cond(node.value):
+            node = node.next
+        return node
 
     @property
     def head(self) -> Node:
