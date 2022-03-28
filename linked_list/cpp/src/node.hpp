@@ -2,25 +2,26 @@
 #define SRC_NODE_HPP_
 
 
+template<typename T>
 class Node {
 public:
-  Node(int value)
+  Node(T value)
       : value(value) {}
 
   /* prevent accidental modification */
-  const Node* next() const {
+  const Node<T>* next() const {
     return next_;
   }
 
-  void SetNext(Node* node) {
+  void SetNext(Node<T>* node) {
     next_ = node;
   }
 
   /* value is intentionally let public for update */
-  int value;
+  T value;
 
 private:
-  Node* next_ = nullptr;
+  Node<T>* next_ = nullptr;
 };
 
 

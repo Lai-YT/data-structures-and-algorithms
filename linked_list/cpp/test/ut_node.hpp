@@ -4,7 +4,7 @@
 
 
 TEST(NodeTest, Value) {
-  Node node{25};
+  Node<int> node{25};
 
   ASSERT_EQ(25, node.value);
   ASSERT_FALSE(node.next());
@@ -12,8 +12,8 @@ TEST(NodeTest, Value) {
 
 
 TEST(NodeTest, Next) {
-  Node node{25};
-  Node next_node{20};
+  Node<int> node{25};
+  Node<int> next_node{20};
   node.SetNext(&next_node);
 
   ASSERT_TRUE(node.next());
