@@ -9,13 +9,31 @@
 template<typename T>
 class LinkedList {
 public:
-  void Append(T data);
+  ~LinkedList() {
+    while (head_) {
+      Node<T>* temp = head_;
+      head_ = head_->next;
+      delete temp;
+      temp = nullptr;
+    }
+    head_ = tail_ = nullptr;
+  }
 
-  void Remove(std::function<bool(T)> cond);
+  void AppendFront(T data) {
+
+  }
+
+  void AppendBack(T data);
+
+  void InsertAfter(Node<T>* tar);
+
+  void Remove(Node<T>* tar);
 
   Node<T>* Find(std::function<bool(T)> cond) const;
 
-  bool IsEmpty() const;
+  bool IsEmpty() const {
+    return head_ == nullptr;
+  }
 
   const Node<T>* head() const {
     return head_;
