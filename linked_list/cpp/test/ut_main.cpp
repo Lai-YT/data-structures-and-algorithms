@@ -1,5 +1,5 @@
+#include "ut_node.hpp"  /* test Node first */
 #include "ut_linked_list.hpp"
-#include "ut_node.hpp"
 
 #include <gtest/gtest.h>
 
