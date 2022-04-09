@@ -308,3 +308,41 @@ TEST_F(LinkedListTest, IsEmpty) {
   list_.Remove(list_.Find(EqualTo(0)));
   ASSERT_TRUE(list_.IsEmpty());
 }
+
+/**
+ * @brief An empty list shouldn't be broken after the reversal.
+ */
+TEST_F(LinkedListTest, ReverseEmpty) {
+  list_.Reverse();
+  ASSERT_TRUE(list_.IsEmpty());
+}
+
+/**
+ * @brief A list with only 1 node should stay the same after the reversal.
+ */
+TEST_F(LinkedListTest, ReverseOnlyOne) {
+  list_.AppendFront(1);
+  ASSERT_TRUE(list_.head());
+  ASSERT_TRUE(list_.tail());
+  ASSERT_TRUE(list_.head() == list_.tail());
+  ASSERT_EQ(1, list_.head()->value);
+  ASSERT_FALSE(list_.head()->next);
+}
+
+/**
+ * @brief Normally reverse a list with 100 nodes.
+ */
+TEST_F(LinkedListTest, Reverse) {
+  for (int i = 0; i < 100; ++i) {
+    list_.AppendBack(i);
+  }
+
+  list_.Reverse();
+
+  int i = 99;
+  for (const Node<int>* cur = list_.head(); cur; cur = cur->next) {
+    ASSERT_EQ(i--, cur->value);
+  }
+  ASSERT_EQ(-1, i);
+  ASSERT_FALSE(list_.tail()->next);  /* all links should be reversed */
+}
