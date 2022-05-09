@@ -214,7 +214,10 @@ TEST_F(LinkedListTest, Remove) {
 
   auto* tar = list_.Find(EqualTo(VALUE_TO_REMOVE));
   ASSERT_TRUE(tar);
+
   list_.Remove(tar);
+  delete tar;
+  tar = nullptr;
 
   int i = 0;
   for (const Node<int>* cur = list_.head(); cur; cur = cur->next) {
@@ -235,7 +238,12 @@ TEST_F(LinkedListTest, RemoveHead) {
   for (int i = 0; i < 10; ++i) {
     list_.AppendBack(i);
   }
-  list_.Remove(list_.Find(EqualTo(0 /* this is the head */)));
+  Node<int>* head = list_.Find(EqualTo(0));
+
+  list_.Remove(head);
+  delete head;
+  head = nullptr;
+
   ASSERT_TRUE(list_.head());
   ASSERT_EQ(1, list_.head()->value);
   ASSERT_EQ(2, list_.head()->next->value);
@@ -249,7 +257,11 @@ TEST_F(LinkedListTest, RemoveTail) {
   for (int i = 0; i < 10; ++i) {
     list_.AppendBack(i);
   }
-  list_.Remove(list_.Find(EqualTo(9 /* this is the tail */)));
+  Node<int>* tail = list_.Find(EqualTo(9));
+
+  list_.Remove(tail);
+  delete tail;
+  tail = nullptr;
 
   ASSERT_TRUE(list_.tail());
   ASSERT_EQ(8, list_.tail()->value);
@@ -268,7 +280,12 @@ TEST_F(LinkedListTest, RemoveTail) {
  */
 TEST_F(LinkedListTest, RemoveLastOne) {
   list_.AppendFront(1);
-  list_.Remove(list_.Find(EqualTo(1)));
+  Node<int>* last = list_.Find(EqualTo(1));
+
+  list_.Remove(last);
+  delete last;
+  last = nullptr;
+
   ASSERT_TRUE(list_.IsEmpty());
 }
 
@@ -280,8 +297,7 @@ TEST_F(LinkedListTest, RemoveNotExists) {
     list_.AppendBack(i);
   }
   auto tar = Node<int>{50};
-  /* "invalid pointer" will occur immediately if this
-    stack-allocated pointer is deleted */
+
   list_.Remove(&tar);
 
   /* tar not modified */
