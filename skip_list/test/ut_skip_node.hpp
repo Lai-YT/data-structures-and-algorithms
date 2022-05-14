@@ -29,7 +29,14 @@ TEST(SkipNodeTest, SetNextWrongLevel) {
   SkipNode<std::string> left{"left", 0};
   SkipNode<std::string> right{"right", 1};
 
-  ASSERT_THROW(left.set_next(&right), LevelRelationException);
+  ASSERT_THROW({
+    try {
+      left.set_next(&right);
+    } catch (const LevelRelationException& e) {
+      EXPECT_STREQ("`next` node with level 1, should be 0", e.what());
+      throw;
+    }
+  }, LevelRelationException);
 }
 
 
@@ -49,5 +56,12 @@ TEST(SkipNodeTest, SetDownWrongLevel) {
   SkipNode<std::string> top{"top", 10};
   SkipNode<std::string> down{"down", 8};
 
-  ASSERT_THROW(top.set_down(&down), LevelRelationException);
+  ASSERT_THROW({
+    try {
+      top.set_down(&down);
+    } catch (const LevelRelationException& e) {
+      EXPECT_STREQ("`down` node with level 8, should be 9", e.what());
+      throw;
+    }
+  }, LevelRelationException);
 }
