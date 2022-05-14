@@ -16,7 +16,13 @@ class SkipNode {
 public:
   /// A SkipNode has a value and knows its level.
   SkipNode(const T& value, const int level)
-      : value_{value}, level_{level} {}
+      : value_{value}, level_{level}, forwards_{new SkipNode<T>*[level]} {
+    /* forward nodes are automatically initialized to nullptr */
+  }
+
+  ~SkipNode() {
+    delete [] forwards_;
+  }
 
   T value() const {
     return value_;
@@ -26,47 +32,29 @@ public:
     return level_;
   }
 
-  /**
-   * @brief The next node of the same level.
-   * Node at the very right (largest value) would have its next be null.
-   */
-  SkipNode<T>* next() const {
-    return next_;
-  }
-
-  /**
-   * @throw LevelRelationException if `next` isn't at the same level.
-   */
-  void set_next(SkipNode<T>* const next) {
-    if (next->level() != level_) {
-      throw LevelRelationException("`next` node with level " + std::to_string(next->level()) + ", should be " + std::to_string(level_));
+  void set_forward(SkipNode<T>* const forward, const int level) {
+    if (level > level_) {
+      throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));
     }
-    next_ = next;
-  }
-
-  /**
-   * @brief The node right under this node.
-   * Node at level 0 would have its `down` be null.
-   */
-  SkipNode<T>* down() const {
-    return down_;
-  }
-
-  /**
-   * @throw LevelRelationException if the level of `down` node isn't right under this node.
-   */
-  void set_down(SkipNode<T>* const down) {
-    if (down->level() != level_ - 1) {
-      throw LevelRelationException("`down` node with level " + std::to_string(down->level()) + ", should be " + std::to_string(level_ - 1));
+    if (forward->level() < level) {
+      throw LevelRelationException("a level " + std::to_string(level) + " forward node should have its level greater than "
+                                   + std::to_string(level) + ", but only " + std::to_string(forward->level()));
     }
-    down_ = down;
+    forwards_[level - 1] = forward;
+  }
+
+  SkipNode<T>* forward(const int level) {
+    if (level > level_) {
+      throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));
+    }
+    return forwards_[level - 1];
   }
 
 private:
   T value_;
   int level_;
-  SkipNode<T>* down_ = nullptr;
-  SkipNode<T>* next_ = nullptr;
+  /// The forward nodes pointed to in each level.
+  SkipNode<T>** forwards_;
 };
 
 

@@ -4,63 +4,80 @@
 #include "../src/skip_node.hpp"
 
 
-/// The `value` and `level` of a node should be set properly by constructor.
+/**
+ * @brief The `value` and `level` of a node should be set properly by constructor,
+ * and all its forward nodes should be null.
+ */
 TEST(SkipNodeTest, CallConstructor) {
   SkipNode<std::string> node{"MyNode", 15};
 
   ASSERT_EQ("MyNode", node.value());
   ASSERT_EQ(15, node.level());
+  for (int i = 1; i <= node.level(); ++i) {
+    ASSERT_TRUE(node.forward(i) == nullptr);
+  }
 }
 
 
-/// Should be successfully set as the `next` node.
-TEST(SkipNodeTest, SetNextSameLevel) {
-  SkipNode<std::string> left{"left", 0};
-  SkipNode<std::string> right{"right", 0};
+/// Forward nodes should be properly set and get when they don't exceed the forward level that the node can have.
+TEST(SkipNodeTest, SetForwardInLimit) {
+  SkipNode<std::string> node{"MyNode", 5};
+  SkipNode<std::string> forwards[] = {
+    SkipNode<std::string>{"1", 1}, SkipNode<std::string>{"2", 2}, SkipNode<std::string>{"3", 3},
+    SkipNode<std::string>{"4", 4}, SkipNode<std::string>{"5", 5}
+  };
 
-  left.set_next(&right);
+  for (int i = 1; i <= node.level(); ++i) {
+    node.set_forward(&forwards[i - 1], i);
+  }
 
-  ASSERT_EQ(left.next(), &right);
+  for (int i = 1; i <= node.level(); ++i) {
+    ASSERT_EQ(std::to_string(i), node.forward(i)->value());
+  }
 }
 
 
-/// A LevelRelationException should be thrown when the node isn't at the same level.
-TEST(SkipNodeTest, SetNextWrongLevel) {
-  SkipNode<std::string> left{"left", 0};
-  SkipNode<std::string> right{"right", 1};
+/// Exception should be thrown when a low level node is set as a high level forward node.
+TEST(SkipNodeTest, SetForwardTooLowLevel) {
+  SkipNode<std::string> node{"MyNode", 5};
+  SkipNode<std::string> forward{"3", 3};
 
   ASSERT_THROW({
     try {
-      left.set_next(&right);
+      node.set_forward(&forward, 5);
     } catch (const LevelRelationException& e) {
-      EXPECT_STREQ("`next` node with level 1, should be 0", e.what());
+      EXPECT_STREQ("a level 5 forward node should have its level greater than 5, but only 3", e.what());
       throw;
     }
   }, LevelRelationException);
 }
 
 
-/// Should be successfully set as the `down` node.
-TEST(SkipNodeTest, SetDownOneLevelBelow) {
-  SkipNode<std::string> top{"top", 10};
-  SkipNode<std::string> down{"down", 9};
-
-  top.set_down(&down);
-
-  ASSERT_EQ(top.down(), &down);
-}
-
-
-/// A LevelRelationException should be thrown when the node isn't one level below.
-TEST(SkipNodeTest, SetDownWrongLevel) {
-  SkipNode<std::string> top{"top", 10};
-  SkipNode<std::string> down{"down", 8};
+/// Exception should be thrown when a level n forward node is set to a level m node, where n > m.
+TEST(SkipNodeTest, SetForwardExceedLimit) {
+  SkipNode<std::string> node{"MyNode", 5};
+  SkipNode<std::string> forward{"6", 6};
 
   ASSERT_THROW({
     try {
-      top.set_down(&down);
+      node.set_forward(&forward, 6);
     } catch (const LevelRelationException& e) {
-      EXPECT_STREQ("`down` node with level 8, should be 9", e.what());
+      EXPECT_STREQ("level 6 exceeds the limit, which is 5", e.what());
+      throw;
+    }
+  }, LevelRelationException);
+}
+
+
+/// Exception should be thrown when getting a high level forward node from a low level node.
+TEST(SkipNodeTest, GetForwardExceedLimit) {
+  SkipNode<std::string> node{"MyNode", 5};
+
+  ASSERT_THROW({
+    try {
+      node.forward(6);
+    } catch (const LevelRelationException& e) {
+      EXPECT_STREQ("level 6 exceeds the limit, which is 5", e.what());
       throw;
     }
   }, LevelRelationException);
