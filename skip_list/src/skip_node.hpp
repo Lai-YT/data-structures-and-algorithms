@@ -1,6 +1,13 @@
 #ifndef SRC_SKIP_NODE_HPP_
 #define SRC_SKIP_NODE_HPP_
 
+
+/**
+ * Define `MEM_DEBUG` before including this file to enable the memory
+ * allocation-deallocation counting feature, which can be used to test memory leaks.
+ */
+
+
 #include <exception>
 #include <string>
 
@@ -17,11 +24,26 @@ public:
   /// A SkipNode has a value and knows its level.
   SkipNode(const T& value, const int level)
       : value_{value}, level_{level}, forwards_{new SkipNode<T>*[level]} {
-    /* forward nodes are automatically initialized to nullptr */
+    /* initialize forward nodes to nullptr */
+    for (int i = 0; i < level; ++i) {
+      forwards_[i] = nullptr;
+    }
+#ifdef MEM_DEBUG
+    ++alloc_count;
+#endif
   }
 
+#ifdef MEM_DEBUG
+  static int alloc_count;
+  static int dealloc_count;
+#endif
+
   ~SkipNode() {
+    /* only delete the forward containing array, not the nodes linked to */
     delete [] forwards_;
+#ifdef MEM_DEBUG
+    ++dealloc_count;
+#endif
   }
 
   T value() const {
@@ -57,5 +79,12 @@ private:
   SkipNode<T>** forwards_;
 };
 
+#ifdef MEM_DEBUG
+template<typename T>
+int SkipNode<T>::alloc_count = 0;
+
+template<typename T>
+int SkipNode<T>::dealloc_count = 0;
+#endif
 
 #endif /* end of include guard: SRC_SKIP_NODE_HPP_ */

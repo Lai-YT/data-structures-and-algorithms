@@ -4,14 +4,18 @@
 #include <iostream>
 #include <cstdlib>
 
-#ifdef ENABLE_DEBUG
+/**
+ * Define `ASSERT_DEBUG` before including this file to enable the assertion feature.
+ */
+#ifdef ASSERT_DEBUG
   #define ASSERT(condition) \
     if (!(condition)) {  \
       std::cerr << "Assertion failed: line " << __LINE__ << " file " << __FILE__ << '\n';  \
       std::abort();  \
     }
 #else
-  #define ASSERT(condition) ; /* replace with a single semi-colon */
+  /* replace with "nothing" to disable the assertion */
+  #define ASSERT(condition)
 #endif
 
 #endif /* end of include guard: SRC_DEBUG_HPP_ */

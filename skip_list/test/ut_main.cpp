@@ -1,3 +1,7 @@
+#ifndef MEM_DEBUG
+  #define MEM_DEBUG
+#endif
+
 #include "ut_skip_node.hpp"
 #include "ut_skip_list.hpp"
 

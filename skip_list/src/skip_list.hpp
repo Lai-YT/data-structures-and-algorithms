@@ -1,7 +1,9 @@
 #ifndef SRC_SKIP_LIST_HPP_
 #define SRC_SKIP_LIST_HPP_
 
-#define ENABLE_DEBUG 1  /* enable debug macros */
+#ifndef ASSERT_DEBUG
+  #define ASSERT_DEBUG  /* enable assertion macros */
+#endif
 
 #include <cstdlib>
 #include <ctime>
@@ -10,6 +12,15 @@
 #include "skip_node.hpp"
 
 
+/**
+ * @brief This is a skip list that refers to the original implementation
+ * by William Pugh in "Skip Lists: A Probabilistic Alternative to Balanced Trees".
+ *
+ * Implements the following operations:
+ *  - SkipNode<T>* Find(const T& value) const
+ *  - void Insert(const T& value)
+ *  - void Delete(const T& value)
+ */
 template<typename T>
 class SkipList {
 public:
@@ -27,7 +38,20 @@ public:
     std::srand(std::time(0));
   }
 
-  /// Returns the node with `value` if found, otherwise nullptr.
+  ~SkipList() {
+    /* deallocates node by node (from left to right) */
+    SkipNode<T>* cur = header_;
+    while (cur) {
+      SkipNode<T>* next = cur->forward(1);
+      delete cur;
+      cur = next;
+    }
+  }
+
+  /**
+   * @brief Returns the node with `value` if found, otherwise nullptr.
+   * @complex O(lg(n)) w.h.p.
+   */
   SkipNode<T>* Find(const T& value) const {
     const SkipNode<T>* cur = header_;
 
@@ -53,6 +77,10 @@ public:
     return const_cast<SkipNode<T>*>(cur);
   }
 
+  /**
+   * @brief Inserts a new node with `value` into the list.
+   * @complex O(lg(n)) w.h.p.
+   */
   void Insert(const T& value) {
     /* record our way back to update the links */
     SkipNode<T>* updates[MAX_LEVEL] = {};
@@ -63,6 +91,7 @@ public:
       while (cur->forward(i) && cur->forward(i)->value() < value) {
         cur = cur->forward(i);
       }
+      ASSERT(cur);
       updates[i] = cur;  /* record the way */
     }
 
@@ -73,6 +102,7 @@ public:
     if (new_node->level() > level_count_) {
       for (int i = level_count_ + 1; i <= new_node->level(); ++i) {
         updates[i] = header_;
+        ASSERT(!updates[i]->forward(i));  /* should points to null since is a new level */
       }
       level_count_ = new_node->level();
     }
@@ -89,6 +119,10 @@ public:
     }
   }
 
+  /**
+   * @brief Deletes the node with `value` from the list if exist.
+   * @complex O(lg(n)) w.h.p.
+   */
   void Delete(const T& value) {
     /* record our way back to update the links */
     SkipNode<T>* updates[MAX_LEVEL] = {};
@@ -121,6 +155,11 @@ public:
     }
   }
 
+  /**
+   * @brief Generates levels randomly from level 1, level i with probability (`LEVEL_UP_PROB` ^ i).
+   * i.e., a fraction `LEVEL_UP_PROB` of the nodes with level i forward nodes
+   * also have level i + 1 forward nodes.
+   */
   int RandomLevel_() const {
     int level = 1;
     while (level <= MAX_LEVEL && std::rand() < RAND_MAX * LEVEL_UP_PROB) {
@@ -130,9 +169,24 @@ public:
     return level;
   }
 
+  /// Prints the skip nodes level by level (no headers) for debugging purpose.
+  void Dump_() const {
+    for (int i = level_count_; i > 0; --i) {
+      SkipNode<T>* cur = header_->forward(i);
+      std::cout << i << ": ";
+      while (cur) {
+        std::cout << cur->value() << ' ';
+        cur = cur->forward(i);
+      }
+      std::cout << '\n';
+    }
+  }
+
 private:
   SkipNode<T>* header_ = new SkipNode<T>{T{/* default dummy value */}, MAX_LEVEL};
-  int level_count_ = 1;  /* level starts from 1. */
+
+  /// The level of the highest level node in the list.
+  int level_count_ = 1;  /* base level starts from 1. */
 };
 
 

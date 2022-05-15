@@ -79,6 +79,26 @@ TEST(SkipListTest, FindValues) {
 }
 
 
+/// Though dummy value "0" is used in SkipList<int>, `value` find shouldn't be affected.
+TEST(SkipListTest, FindValuesNegativeTenToPositiveTen) {
+  SkipList<int> list{};
+
+  for (int i = -10; i <= 10; ++i) {
+    list.Insert(i);
+  }
+
+  const int order[] = {  /* a random generated order */
+    -10, 7, -9, -1, 3, 6, 0, 10, 1, -2, -6, 8, -4, 2, -3, 4, -5, 9, -7, -8, 5,
+  };
+  for (const int i : order) {
+    auto* node = list.Find(i);
+
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ(i, node->value());
+  }
+}
+
+
 /// The last value in the list should be deleted properly.
 TEST(SkipListTest, DeleteOnlyValueInList) {
   SkipList<int> list{};
@@ -114,3 +134,72 @@ TEST(SkipListTest, DeleteValues) {
     ASSERT_TRUE(list.Find(i) == nullptr);
   }
 }
+
+
+/// Though dummy value "0" is used in SkipList<int>, `value` deletion shouldn't be affected.
+TEST(SkipListTest, DeleteValuesNegativeTenToPositiveTen) {
+  SkipList<int> list{};
+
+  for (int i = -10; i <= 10; ++i) {
+    list.Insert(i);
+  }
+
+  const int order[] = {  /* a random generated order */
+    -10, 7, -9, -1, 3, 6, 0, 10, 1, -2, -6, 8, -4, 2, -3, 4, -5, 9, -7, -8, 5,
+  };
+  ASSERT_NO_THROW({
+    for (const int i : order) {
+      list.Delete(i);
+    }
+  });
+
+  for (int i = -10; i <= 10; ++i) {
+    ASSERT_TRUE(list.Find(i) == nullptr);
+  }
+}
+
+
+/// Deletion should clean up and re-link nodes properly so the coming insertion isn't broken.
+TEST(SkipListTest, InsertAndDeleteAlternately) {
+  SkipList<int> list{};
+
+  for (int i = 0; i < 10; ++i) {
+    for (int i = -10; i <= 10; ++i) {
+      list.Insert(i);
+    }
+    for (int i = -10; i <= 10; ++i) {
+      auto* node = list.Find(i);
+      ASSERT_TRUE(node != nullptr);
+      ASSERT_EQ(i, node->value());
+    }
+    for (int i = -10; i <= 10; ++i) {
+      list.Delete(i);
+    }
+    for (int i = -10; i <= 10; ++i) {
+      ASSERT_TRUE(list.Find(i) == nullptr);
+    }
+  }
+}
+
+
+#ifdef MEM_DEBUG
+
+/// The number of allocation and deallocation count should match, otherwise memory leaks.
+TEST(SkipListTest, DeallocateNodesProperly) {
+  /* reset the counters */
+  SkipNode<int>::alloc_count = 0;
+  SkipNode<int>::dealloc_count = 0;
+
+  /* both counts should be 50 + 1 (header) after exiting the block */
+  {
+    SkipList<int> list{};
+    for (int i = 1; i <= 50; ++i) {
+      list.Insert(i);
+    }
+  }
+
+  ASSERT_EQ(51, SkipNode<int>::alloc_count);
+  ASSERT_EQ(51, SkipNode<int>::dealloc_count);
+}
+
+#endif
