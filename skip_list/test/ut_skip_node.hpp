@@ -19,6 +19,15 @@ TEST(SkipNodeTest, CallConstructor) {
 }
 
 
+/// The forward nodes can be null.
+TEST(SkipNodeTest, SetForwardNull) {
+  SkipNode<std::string> node{"MyNode", 5};
+
+  ASSERT_NO_THROW(node.set_forward(nullptr, 1));
+  ASSERT_TRUE(node.forward(1) == nullptr);
+}
+
+
 /// Forward nodes should be properly set and get when they don't exceed the forward level that the node can have.
 TEST(SkipNodeTest, SetForwardInLimit) {
   SkipNode<std::string> node{"MyNode", 5};

@@ -36,14 +36,14 @@ public:
     if (level > level_) {
       throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));
     }
-    if (forward->level() < level) {
+    if (forward /* no check if is null */ && forward->level() < level) {
       throw LevelRelationException("a level " + std::to_string(level) + " forward node should have its level greater than "
                                    + std::to_string(level) + ", but only " + std::to_string(forward->level()));
     }
     forwards_[level - 1] = forward;
   }
 
-  SkipNode<T>* forward(const int level) {
+  SkipNode<T>* forward(const int level) const {
     if (level > level_) {
       throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));
     }
