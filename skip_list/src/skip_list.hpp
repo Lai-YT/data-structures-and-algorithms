@@ -3,6 +3,9 @@
 
 #define ENABLE_DEBUG 1  /* enable debug macros */
 
+#include <cstdlib>
+#include <ctime>
+
 #include "debug.hpp"
 #include "skip_node.hpp"
 
@@ -20,14 +23,18 @@ public:
   /// The highest possible level.
   static constexpr int MAX_LEVEL = 16;
 
+  SkipList() {
+    std::srand(std::time(0));
+  }
+
   /// Returns the node with `value` if found, otherwise nullptr.
   SkipNode<T>* Find(const T& value) const {
-    const SkipNode<T>* cur = head_;
+    const SkipNode<T>* cur = header_;
 
     /* from top to down */
     for (int i = level_count_; i > 0; --i) {
       /* from left to right */
-      while (cur->forward(i) && cur->forward(i) < value) {
+      while (cur->forward(i) && cur->forward(i)->value() < value) {
         cur = cur->forward(i);
       }
     }
@@ -46,11 +53,56 @@ public:
     return const_cast<SkipNode<T>*>(cur);
   }
 
-  void Insert(const T& value);
+  void Insert(const T& value) {
+    /* record our way back to update the links */
+    SkipNode<T>* updates[MAX_LEVEL] = {};
+
+    /* do a search to find the position to insert */
+    SkipNode<T>* cur = header_;
+
+    for (int i = level_count_; i > 0; --i) {
+      while (cur->forward(i) && cur->forward(i)->value() < value) {
+        cur = cur->forward(i);
+      }
+      updates[i] = cur;  /* record the way */
+    }
+
+    auto* new_node = new SkipNode<T>{value, RandomLevel_()};
+
+    /* if the inserted node introduces a new level, we have to build them up
+      and be ready to update*/
+    if (new_node->level() > level_count_) {
+      for (int i = level_count_ + 1; i <= new_node->level(); ++i) {
+        updates[i] = header_;
+      }
+      level_count_ = new_node->level();
+    }
+    ASSERT(cur); ASSERT(new_node);  /* none of them could be null */  
+
+    /* update the links */
+    for (int i = 1; i <= new_node->level(); ++i) {
+      ASSERT(updates[i]);  /* not null */
+
+      new_node->set_forward(updates[i]->forward(i), i);
+      updates[i]->set_forward(new_node, i);
+
+      ASSERT(new_node->forward(i) != new_node);  /* no cycle */
+    }
+  }
+
   void Delete(const T& value);
 
+  int RandomLevel_() const {
+    int level = 1;
+    while (level <= MAX_LEVEL && std::rand() < RAND_MAX * LEVEL_UP_PROB) {
+      ++level;
+    }
+    ASSERT(level <= MAX_LEVEL);
+    return level;
+  }
+
 private:
-  SkipNode<T>* head_ = new SkipNode<T>(T{/* default dummy value */}, MAX_LEVEL);
+  SkipNode<T>* header_ = new SkipNode<T>{T{/* default dummy value */}, MAX_LEVEL};
   int level_count_ = 1;  /* level starts from 1. */
 };
 
