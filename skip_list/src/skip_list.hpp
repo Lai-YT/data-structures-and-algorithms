@@ -59,7 +59,6 @@ public:
 
     /* do a search to find the position to insert */
     SkipNode<T>* cur = header_;
-
     for (int i = level_count_; i > 0; --i) {
       while (cur->forward(i) && cur->forward(i)->value() < value) {
         cur = cur->forward(i);
@@ -77,7 +76,7 @@ public:
       }
       level_count_ = new_node->level();
     }
-    ASSERT(cur); ASSERT(new_node);  /* none of them could be null */  
+    ASSERT(cur); ASSERT(new_node);  /* none of them could be null */
 
     /* update the links */
     for (int i = 1; i <= new_node->level(); ++i) {
@@ -90,7 +89,37 @@ public:
     }
   }
 
-  void Delete(const T& value);
+  void Delete(const T& value) {
+    /* record our way back to update the links */
+    SkipNode<T>* updates[MAX_LEVEL] = {};
+
+    /* do a search to find the node to delete */
+    SkipNode<T>* tar = header_;
+    for (int i = level_count_; i > 0; --i) {
+      while (tar->forward(i) && tar->forward(i)->value() < value) {
+        tar = tar->forward(i);
+      }
+      updates[i] = tar;  /* record the way */
+    }
+
+    tar = tar->forward(1);
+    if (!tar || tar->value() != value) {
+      /* value not found */
+      return;
+    }
+
+    /* the levels which link to `tar` need to be re-linked */
+    for (int i = 1; i <= tar->level(); ++i) {
+      updates[i]->set_forward(tar->forward(i), i);
+    }
+    delete tar;
+    tar = nullptr;
+
+    /* decrease the level count if the node with highest level is deleted */
+    while (level_count_ > 1 && !header_->forward(level_count_)) {
+      --level_count_;
+    }
+  }
 
   int RandomLevel_() const {
     int level = 1;

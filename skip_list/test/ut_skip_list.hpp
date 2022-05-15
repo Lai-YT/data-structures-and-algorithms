@@ -77,3 +77,40 @@ TEST(SkipListTest, FindValues) {
     ASSERT_EQ(i, node->value());
   }
 }
+
+
+/// The last value in the list should be deleted properly.
+TEST(SkipListTest, DeleteOnlyValueInList) {
+  SkipList<int> list{};
+  list.Insert(1);
+
+  ASSERT_NO_THROW(list.Delete(1));
+  ASSERT_TRUE(list.Find(1) == nullptr);
+}
+
+
+/// Deletes all 50 values from the list, so we should get nullptrs when we try to find those values.
+TEST(SkipListTest, DeleteValues) {
+  SkipList<int> list{};
+  /* insert values */
+  for (int i = 1; i <= 50; ++i) {
+    list.Insert(i);
+  }
+
+  /* delete all */
+  const int order[] = {  /* a random generated order */
+    47, 42, 39, 12, 24, 23, 17, 7, 40, 33, 1, 3, 15, 2, 30, 34, 26, 44, 5, 36,
+    20, 22, 10, 29, 50, 6, 38, 37, 31, 32, 8, 49, 27, 28, 48, 43, 13, 35, 45,
+    19, 41, 16, 9, 14, 25, 18, 11, 21, 46, 4,
+  };
+  ASSERT_NO_THROW({
+    for (const int i : order) {
+      list.Delete(i);
+    }
+  });
+
+  /* find all */
+  for (int i = 1; i <= 50; ++i) {
+    ASSERT_TRUE(list.Find(i) == nullptr);
+  }
+}
