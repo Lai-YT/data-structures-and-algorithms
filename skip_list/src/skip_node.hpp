@@ -17,13 +17,23 @@ class LevelRelationException : public std::runtime_error {
 };
 
 
+template<typename K /* key */, typename V /* value */>
+struct KeyValuePair {
+  const K key;
+  V value;
+};
+
+
 /// Internal node of SkipList.
-template<typename T>
+template<typename K, typename V>
 class SkipNode {
 public:
   /// A SkipNode has a `value` and knows its `level`.
-  SkipNode(const T& value, const int level)
-      : value_{value}, level_{level}, forwards_{new SkipNode<T>*[level]} {
+  SkipNode(const KeyValuePair<K, V>& key_value_pair, const int level)
+      : key_{key_value_pair.key},
+        value_{key_value_pair.value},
+        level_{level},
+        forwards_{new SkipNode<K, V>*[level]} {
     /* initialize forward nodes to nullptr */
     for (int i = 0; i < level; ++i) {
       forwards_[i] = nullptr;
@@ -47,8 +57,16 @@ public:
 #endif
   }
 
-  T value() const {
+  K key() const {
+    return key_;
+  }
+
+  V value() const {
     return value_;
+  }
+
+  void set_value(const V& value) {
+    value_ = value;
   }
 
   int level() const {
@@ -60,7 +78,7 @@ public:
    *  (1) set to a non-existing level
    *  (2) set a low level node as a high level forward node
    */
-  void set_forward(SkipNode<T>* const forward, const int level) {
+  void set_forward(SkipNode<K, V>* const forward, const int level) {
     if (level > level_) {
       throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));
     }
@@ -74,7 +92,7 @@ public:
   /**
    * @throw LevelRelationException: get from a non-existing level
    */
-  SkipNode<T>* forward(const int level) const {
+  SkipNode<K, V>* forward(const int level) const {
     if (level > level_) {
       throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));
     }
@@ -82,18 +100,20 @@ public:
   }
 
 private:
-  T value_;
-  int level_;
+  /* only the value may be updated, key and level is fixed */
+  const K key_;
+  V value_;
+  const int level_;
   /// The forward nodes pointed to in each level.
-  SkipNode<T>** forwards_;
+  SkipNode<K ,V>** const forwards_;
 };
 
 #ifdef MEM_DEBUG
-template<typename T>
-int SkipNode<T>::alloc_count = 0;
+template<typename K, typename V>
+int SkipNode<K, V>::alloc_count = 0;
 
-template<typename T>
-int SkipNode<T>::dealloc_count = 0;
+template<typename K, typename V>
+int SkipNode<K, V>::dealloc_count = 0;
 #endif
 
 #endif /* end of include guard: SRC_SKIP_NODE_HPP_ */

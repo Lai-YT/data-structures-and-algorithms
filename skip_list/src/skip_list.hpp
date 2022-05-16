@@ -19,15 +19,15 @@
  * by William Pugh in "Skip Lists: A Probabilistic Alternative to Balanced Trees".
  *
  * Implements the following operations:
- *  - SkipNode<T>* Find(const T& value) const
- *  - void Insert(const T& value)
- *  - void Delete(const T& value)
+ *  - SkipNode<K, V>* Find(const K& key) const
+ *  - void Insert(const std::pair<K, V>& key_value_pair)
+ *  - void Delete(const K& key)
  *
  * @note I could have use smart pointer and containers to make the resource
  * management easier and safer, but I decide to have things look pure since
  * we're now implementing the Skip List.
  */
-template<typename T>
+template<typename K, typename V>
 class SkipList {
 public:
   /**
@@ -46,53 +46,61 @@ public:
 
   ~SkipList() {
     /* deallocates node by node (from left to right) */
-    SkipNode<T>* cur = header_;
+    SkipNode<K, V>* cur = header_;
     while (cur) {
-      SkipNode<T>* next = cur->forward(1);
+      SkipNode<K, V>* next = cur->forward(1);
       delete cur;
       cur = next;
     }
   }
 
   /**
-   * @brief Returns the node with `value` if found, otherwise `nullptr`.
+   * @brief Returns the node with `key` if found, otherwise `nullptr`.
    * @complex O(lg(n)) w.h.p.
    */
-  SkipNode<T>* Find(const T& value) const {
-    const SkipNode<T>* cur = header_;
+  SkipNode<K, V>* Find(const K& key) const {
+    const SkipNode<K, V>* cur = header_;
 
     /* from top to down */
     for (int i = level_count_; i > 0; --i) {
       /* from left to right */
-      while (cur->forward(i) && cur->forward(i)->value() < value) {
+      while (cur->forward(i) && cur->forward(i)->key() < key) {
         cur = cur->forward(i);
       }
     }
     cur = cur->forward(1);
-    ASSERT(!cur || cur->value() >= value);
+    ASSERT(!cur || cur->key() >= key);
 
     /*
-     * We're now down to the 1st level with cur->value >= `value`,
-     * so if cur->value is not equal to `value`, node with `value`
+     * We're now down to the 1st level with cur->key >= `key`,
+     * so if cur->key is not equal to `key`, node with `key`
      * doesn't exist.
      */
-    if (!cur || cur->value() != value) {
+    if (!cur || cur->key() != key) {
       return nullptr;
     }
-    return const_cast<SkipNode<T>*>(cur);
+    return const_cast<SkipNode<K, V>*>(cur);
   }
 
   /**
-   * @brief Inserts a new node with `value` into the list.
+   * @brief Inserts a new node of key-value pair into the list. If the `key` already
+   * exist, this method behaves as an Update method.
    * @complex O(lg(n)) w.h.p.
    */
-  void Insert(const T& value) {
-    SkipNode<T>** updates = nullptr;
-    SkipNode<T>* pos = nullptr;
-    std::tie(pos, updates) = FindNodeBeforeWithWayBack_(value);
+  void Insert(const KeyValuePair<K, V>& key_value_pair) {
+    SkipNode<K, V>** updates = nullptr;
+    SkipNode<K, V>* pos = nullptr;
+    std::tie(pos, updates) = FindNodeBeforeWithWayBack_(key_value_pair.key);
 
-    /* TODO: what if the value duplicates? */
-    auto* const new_node = new SkipNode<T>{value, RandomLevel_()};
+    /* already exist, update `value` */
+    if (pos != header_ && pos->key() == key_value_pair.key) {
+      pos->set_value(key_value_pair.value);
+      delete [] updates;
+      updates = nullptr;
+      return;
+    }
+
+    auto* const new_node = new SkipNode<K, V>{key_value_pair, RandomLevel_()};
 
     /* if the inserted node introduces a new level, we have to build them up
       and be ready to update*/
@@ -113,20 +121,24 @@ public:
       updates[i]->set_forward(new_node, i);
       ASSERT(new_node->forward(i) != new_node);  /* no cycle */
     }
+    delete [] updates;
+    updates = nullptr;
   }
 
   /**
-   * @brief Deletes the node with `value` from the list if exist.
+   * @brief Deletes the node with `key` from the list if exist.
    * @complex O(lg(n)) w.h.p.
    */
-  void Delete(const T& value) {
-    SkipNode<T>** updates = nullptr;
-    SkipNode<T>* tar = nullptr;
-    std::tie(tar, updates) = FindNodeBeforeWithWayBack_(value);
+  void Delete(const K& key) {
+    SkipNode<K, V>** updates = nullptr;
+    SkipNode<K, V>* tar = nullptr;
+    std::tie(tar, updates) = FindNodeBeforeWithWayBack_(key);
 
     tar = tar->forward(1);  /* this is now the target node */
-    if (!tar || tar->value() != value) {
-      /* value not found */
+    if (!tar || tar->key() != key) {
+      /* key not found */
+      delete [] updates;
+      updates = nullptr;
       return;
     }
 
@@ -164,21 +176,21 @@ public:
    * Rememebr to delete the way back pointer array after use, the caller takes the ownership.
    * @complex O(lg(n)) w.h.p.
    */
-  std::pair<SkipNode<T>*, SkipNode<T>**>
-  FindNodeBeforeWithWayBack_(const T& value) const {
+  std::pair<SkipNode<K, V>*, SkipNode<K, V>**>
+  FindNodeBeforeWithWayBack_(const K& key) const {
     /* record our way back to update the links */
-    auto** way = new SkipNode<T>*[MAX_LEVEL];
+    auto** way = new SkipNode<K, V>*[MAX_LEVEL];
 
     /* do a search to find the node */
-    SkipNode<T>* tar = header_;
+    SkipNode<K, V>* tar = header_;
     for (int i = level_count_; i > 0; --i) {
-      while (tar->forward(i) && tar->forward(i)->value() < value) {
+      while (tar->forward(i) && tar->forward(i)->key() < key) {
         tar = tar->forward(i);
       }
       ASSERT(tar);
       way[i] = tar;
     }
-    ASSERT(tar == header_ || tar->value() < value);  /* stop before the exact value */
+    ASSERT(tar == header_ || tar->key() < key);  /* stop before the exact value */
     return std::make_pair(tar, way);
   }
 
@@ -188,10 +200,10 @@ public:
    */
   void Dump_() const {
     for (int i = level_count_; i > 0; --i) {
-      SkipNode<T>* cur = header_->forward(i);
+      SkipNode<K, V>* cur = header_->forward(i);
       std::cout << i << ": ";
       while (cur) {
-        std::cout << cur->value() << ' ';
+        std::cout << "(" << cur->key() << ", " << cur->value() << ")" << ' ';
         cur = cur->forward(i);
       }
       std::cout << '\n';
@@ -199,7 +211,7 @@ public:
   }
 
 private:
-  SkipNode<T>* header_ = new SkipNode<T>{T{/* default dummy value */}, MAX_LEVEL};
+  SkipNode<K, V>* header_ = new SkipNode<K, V>{{K{}, V{} /* default dummy value */}, MAX_LEVEL};
 
   /// The level of the highest level node in the list.
   int level_count_ = 1;  /* base level starts from 1. */
