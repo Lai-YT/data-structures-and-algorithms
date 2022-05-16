@@ -1,7 +1,6 @@
 #ifndef SRC_SKIP_NODE_HPP_
 #define SRC_SKIP_NODE_HPP_
 
-
 /**
  * Define `MEM_DEBUG` before including this file to enable the memory
  * allocation-deallocation counting feature, which can be used to test memory leaks.
@@ -12,6 +11,7 @@
 #include <string>
 
 
+/// Indicates that there's something wrong about the relation between a node and its forward node.
 class LevelRelationException : public std::runtime_error {
   using std::runtime_error::runtime_error;  /* use base class constructors */
 };
@@ -21,7 +21,7 @@ class LevelRelationException : public std::runtime_error {
 template<typename T>
 class SkipNode {
 public:
-  /// A SkipNode has a value and knows its level.
+  /// A SkipNode has a `value` and knows its `level`.
   SkipNode(const T& value, const int level)
       : value_{value}, level_{level}, forwards_{new SkipNode<T>*[level]} {
     /* initialize forward nodes to nullptr */
@@ -34,6 +34,7 @@ public:
   }
 
 #ifdef MEM_DEBUG
+  /// count the number of alloc-deallocations
   static int alloc_count;
   static int dealloc_count;
 #endif
@@ -54,6 +55,11 @@ public:
     return level_;
   }
 
+  /**
+   * @throw LevelRelationException:
+   *  (1) set to a non-existing level
+   *  (2) set a low level node as a high level forward node
+   */
   void set_forward(SkipNode<T>* const forward, const int level) {
     if (level > level_) {
       throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));
@@ -65,6 +71,9 @@ public:
     forwards_[level - 1] = forward;
   }
 
+  /**
+   * @throw LevelRelationException: get from a non-existing level
+   */
   SkipNode<T>* forward(const int level) const {
     if (level > level_) {
       throw LevelRelationException("level " + std::to_string(level) + " exceeds the limit, which is " + std::to_string(level_));

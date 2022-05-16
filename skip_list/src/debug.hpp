@@ -1,8 +1,8 @@
 #ifndef SRC_DEBUG_HPP_
 #define SRC_DEBUG_HPP_
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 /**
  * Define `ASSERT_DEBUG` before including this file to enable the assertion feature.
