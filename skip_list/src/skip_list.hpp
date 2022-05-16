@@ -20,7 +20,7 @@
  *
  * Implements the following operations:
  *  - SkipNode<K, V>* Find(const K& key) const
- *  - void Insert(const std::pair<K, V>& key_value_pair)
+ *  - void Insert(const KeyValuePair<K, V>& key_value_pair)
  *  - void Delete(const K& key)
  *
  * @note I could have use smart pointer and containers to make the resource
