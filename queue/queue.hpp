@@ -2,16 +2,15 @@
 #define QUEUE_HPP_
 
 
-// this is a circular-queue
 template<typename T>
-class Queue {
+class CircularQueue {
 public:
-  Queue(const int capacity)
+  CircularQueue(const int capacity)
       : capacity_(capacity + 1), front_(0), rear_(0) {
     q_ = new T[capacity];
   }
 
-  ~Queue() {
+  ~CircularQueue() {
     delete[] q_;
   }
 
