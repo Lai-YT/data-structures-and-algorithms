@@ -1,68 +1,80 @@
 #include <gtest/gtest.h>
+#include <string>
 
 #include "../src/skip_list.hpp"
 #include "../src/skip_node.hpp"
 
 
-/// The first value of the list should be inserted without any exception thrown.
-TEST(SkipListTest, InsertFirstNode) {
-  SkipList<int> list{};
+class SkipListTest : public ::testing::Test {
+protected:
+  SkipList<int, std::string> list_ = SkipList<int, std::string>{};
+};
 
-  ASSERT_NO_THROW(list.Insert(1));
+
+/// The first value of the list should be inserted without any exception thrown.
+TEST_F(SkipListTest, InsertFirstNode) {
+  ASSERT_NO_THROW(list_.Insert({1, "1"}));
 }
 
 
 /// Inserts 10 numbers, all of them should be inserted without any exceptions thrown.
-TEST(SkipListTest, InsertNumberOneToTen) {
-  SkipList<int> list{};
-
+TEST_F(SkipListTest, InsertNumberOneToTen) {
   ASSERT_NO_THROW({
     for (int i = 1; i <= 10; ++i) {
-      list.Insert(i);
+      list_.Insert({i, std::to_string(i)});
     }
   });
 }
 
 
 /// Though dummy value "0" is used in SkipList<int>, `value` insertion shouldn't be affected.
-TEST(SkipListTest, InsertNumberNegativeTenToPositiveTen) {
-  SkipList<int> list{};
+TEST_F(SkipListTest, InsertNumberNegativeTenToPositiveTen) {
+  ASSERT_NO_THROW({
+    for (int i = -10; i <= 10; ++i) {
+      list_.Insert({i, std::to_string(i)});
+    }
+  });
+}
+
+
+/// Existing keys should be inserted without any exceptions thrown.
+TEST_F(SkipListTest, InsertExistingKey) {
+  for (int i = -10; i <= 10; ++i) {
+    list_.Insert({i, std::to_string(i)});
+  }
 
   ASSERT_NO_THROW({
     for (int i = -10; i <= 10; ++i) {
-      list.Insert(i);
+      list_.Insert({i, std::to_string(i)});
     }
   });
 }
 
 
 /// Finds from an empty list, should get a null pointer.
-TEST(SkipListTest, FindEmptyList) {
-  SkipList<int> list{};
-
-  auto* node = list.Find(-100);
+TEST_F(SkipListTest, FindEmptyList) {
+  auto* node = list_.Find(-100);
 
   ASSERT_TRUE(node == nullptr);
 }
 
 
 /// Finds value from a one value list.
-TEST(SkipListTest, FindOnlyValueInList) {
-  SkipList<int> list{};
-  list.Insert(1);
+TEST_F(SkipListTest, FindOnlyValueInList) {
+  list_.Insert({1, "1"});
 
-  auto* node = list.Find(1);
+  auto* node = list_.Find(1);
 
   ASSERT_TRUE(node != nullptr);
-  ASSERT_EQ(1, node->value());
+  ASSERT_EQ(1, node->key());
+  ASSERT_EQ("1", node->value());
 }
 
 
 /// Inserts 50 values and finds all of them one by one.
-TEST(SkipListTest, FindValues) {
-  SkipList<int> list{};
+TEST_F(SkipListTest, FindValues) {
   for (int i = 1; i <= 50; ++i) {
-    list.Insert(i);
+    list_.Insert({i, std::to_string(i)});
   }
 
   const int order[] = {  /* a random generated order */
@@ -71,50 +83,71 @@ TEST(SkipListTest, FindValues) {
     19, 41, 16, 9, 14, 25, 18, 11, 21, 46, 4,
   };
   for (const int i : order) {
-    auto* node = list.Find(i);
+    auto* node = list_.Find(i);
 
     ASSERT_TRUE(node != nullptr);
-    ASSERT_EQ(i, node->value());
+    ASSERT_EQ(i, node->key());
+    ASSERT_EQ(std::to_string(i), node->value());
   }
 }
 
 
 /// Though dummy value "0" is used in SkipList<int>, `value` find shouldn't be affected.
-TEST(SkipListTest, FindValuesNegativeTenToPositiveTen) {
-  SkipList<int> list{};
-
+TEST_F(SkipListTest, FindValuesNegativeTenToPositiveTen) {
   for (int i = -10; i <= 10; ++i) {
-    list.Insert(i);
+    list_.Insert({i, std::to_string(i)});
   }
 
   const int order[] = {  /* a random generated order */
     -10, 7, -9, -1, 3, 6, 0, 10, 1, -2, -6, 8, -4, 2, -3, 4, -5, 9, -7, -8, 5,
   };
   for (const int i : order) {
-    auto* node = list.Find(i);
+    auto* node = list_.Find(i);
 
     ASSERT_TRUE(node != nullptr);
-    ASSERT_EQ(i, node->value());
+    ASSERT_EQ(i, node->key());
+    ASSERT_EQ(std::to_string(i), node->value());
+  }
+}
+
+
+/// Inserting existing `key` should update the `value` of that `key`.
+TEST_F(SkipListTest, InsertExistingKeysToUpdateValues) {
+  for (int i = -10; i <= 10; ++i) {
+    list_.Insert({i, std::to_string(i)});
+  }
+
+  const int order[] = {  /* a random generated order */
+    -10, 7, -9, -1, 3, 6, 0, 10, 1, -2, -6, 8, -4, 2, -3, 4, -5, 9, -7, -8, 5,
+  };
+  for (const int i : order) {
+    list_.Insert({i, std::to_string(i + 100) /* new value */});
+  }
+
+  for (int i = -10; i <= 10; ++i) {
+    auto* node = list_.Find(i);
+
+    ASSERT_TRUE(node != nullptr);
+    ASSERT_EQ(i, node->key());
+    ASSERT_EQ(std::to_string(i + 100), node->value());
   }
 }
 
 
 /// The last value in the list should be deleted properly.
-TEST(SkipListTest, DeleteOnlyValueInList) {
-  SkipList<int> list{};
-  list.Insert(1);
+TEST_F(SkipListTest, DeleteOnlyValueInList) {
+  list_.Insert({1, "1"});
 
-  ASSERT_NO_THROW(list.Delete(1));
-  ASSERT_TRUE(list.Find(1) == nullptr);
+  ASSERT_NO_THROW(list_.Delete(1));
+  ASSERT_TRUE(list_.Find(1) == nullptr);
 }
 
 
 /// Deletes all 50 values from the list, so we should get nullptrs when we try to find those values.
-TEST(SkipListTest, DeleteValues) {
-  SkipList<int> list{};
+TEST_F(SkipListTest, DeleteValues) {
   /* insert values */
   for (int i = 1; i <= 50; ++i) {
-    list.Insert(i);
+    list_.Insert({i, std::to_string(i)});
   }
 
   /* delete all */
@@ -125,23 +158,21 @@ TEST(SkipListTest, DeleteValues) {
   };
   ASSERT_NO_THROW({
     for (const int i : order) {
-      list.Delete(i);
+      list_.Delete(i);
     }
   });
 
   /* find all */
   for (int i = 1; i <= 50; ++i) {
-    ASSERT_TRUE(list.Find(i) == nullptr);
+    ASSERT_TRUE(list_.Find(i) == nullptr);
   }
 }
 
 
 /// Though dummy value "0" is used in SkipList<int>, `value` deletion shouldn't be affected.
-TEST(SkipListTest, DeleteValuesNegativeTenToPositiveTen) {
-  SkipList<int> list{};
-
+TEST_F(SkipListTest, DeleteValuesNegativeTenToPositiveTen) {
   for (int i = -10; i <= 10; ++i) {
-    list.Insert(i);
+    list_.Insert({i, std::to_string(i)});
   }
 
   const int order[] = {  /* a random generated order */
@@ -149,57 +180,55 @@ TEST(SkipListTest, DeleteValuesNegativeTenToPositiveTen) {
   };
   ASSERT_NO_THROW({
     for (const int i : order) {
-      list.Delete(i);
+      list_.Delete(i);
     }
   });
 
   for (int i = -10; i <= 10; ++i) {
-    ASSERT_TRUE(list.Find(i) == nullptr);
+    ASSERT_TRUE(list_.Find(i) == nullptr);
   }
 }
 
 
 /// Deletion should clean up and re-link nodes properly so the coming insertion isn't broken.
-TEST(SkipListTest, InsertAndDeleteAlternately) {
-  SkipList<int> list{};
-
+TEST_F(SkipListTest, InsertAndDeleteAlternately) {
   for (int i = 0; i < 10; ++i) {
     for (int i = -10; i <= 10; ++i) {
-      list.Insert(i);
+      list_.Insert({i, std::to_string(i)});
     }
     for (int i = -10; i <= 10; ++i) {
-      auto* node = list.Find(i);
+      auto* node = list_.Find(i);
       ASSERT_TRUE(node != nullptr);
-      ASSERT_EQ(i, node->value());
+      ASSERT_EQ(i, node->key());
+      ASSERT_EQ(std::to_string(i), node->value());
     }
     for (int i = -10; i <= 10; ++i) {
-      list.Delete(i);
+      list_.Delete(i);
     }
     for (int i = -10; i <= 10; ++i) {
-      ASSERT_TRUE(list.Find(i) == nullptr);
+      ASSERT_TRUE(list_.Find(i) == nullptr);
     }
   }
 }
 
-
 #ifdef MEM_DEBUG
 
 /// The number of allocation and deallocation count should match, otherwise memory leaks.
-TEST(SkipListTest, DeallocateNodesProperly) {
+TEST_F(SkipListTest, DeallocateNodesProperly) {
   /* reset the counters */
-  SkipNode<int>::alloc_count = 0;
-  SkipNode<int>::dealloc_count = 0;
+  SkipNode<int, std::string>::alloc_count = 0;
+  SkipNode<int, std::string>::dealloc_count = 0;
 
   /* both counts should be 50 + 1 (header) after exiting the block */
   {
-    SkipList<int> list{};
+    SkipList<int, std::string> list{};
     for (int i = 1; i <= 50; ++i) {
-      list.Insert(i);
+      list.Insert({i, std::to_string(i)});
     }
   }
 
-  ASSERT_EQ(51, SkipNode<int>::alloc_count);
-  ASSERT_EQ(51, SkipNode<int>::dealloc_count);
+  ASSERT_EQ(51, (SkipNode<int, std::string>::alloc_count) /* the brackets are necessary to not break the macro */);
+  ASSERT_EQ(51, (SkipNode<int, std::string>::dealloc_count));
 }
 
 #endif
