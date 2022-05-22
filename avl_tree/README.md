@@ -1,6 +1,6 @@
 # AVL tree
 
-AVL tree is a highly balanced binary search tree. It's height *h* is less than *1.44lgn*, where *n* is the number of elements.
+AVL tree is a highly balanced binary search tree. It's height *h* is less than *1.44lg(n)*, where *n* is the number of elements.
 
 ## Complexity
 
@@ -11,4 +11,4 @@ AVL tree is a highly balanced binary search tree. It's height *h* is less than *
 |Insert (Update) |O(*lg(n)*) |O(*lg(n)* |
 |Delete          |O(*lg(n)*) |O(*lg(n)* |
 
-When inserting, the original `TreeNode` data will be updated if key duplicates, i.e., no duplicate keys in the tree.
+When inserting, the original *value* will be updated if *key* is duplicate, which means there are no duplicate *key*s in the tree.
