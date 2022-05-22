@@ -4,27 +4,30 @@
 #include <string>
 
 
+/** A tree node should have `key`, `value`, `height` and its `left`, `right` child. */
 TEST(TreeNodeTest, ConstructNode) {
-  TreeNode<std::string, int> tree_node("April", 4);
-  ASSERT_EQ(tree_node.data, "April");
-  ASSERT_EQ(tree_node.key, 4);
-  ASSERT_EQ(tree_node.height, 0);
-  ASSERT_TRUE(tree_node.left == nullptr);
-  ASSERT_TRUE(tree_node.right == nullptr);
+  TreeNode<int, std::string> tree_node{{4, "April"}};
+
+  ASSERT_EQ(4, tree_node.key());
+  ASSERT_EQ("April", tree_node.value());
+  ASSERT_EQ(0, tree_node.height());
+  ASSERT_TRUE(tree_node.left() == nullptr);
+  ASSERT_TRUE(tree_node.right() == nullptr);
 }
 
-TEST(TreeNodeTest, SetNode) {
-  TreeNode<std::string, int> root_node("April", 4);
-  TreeNode<std::string, int> right_node("May", 5);
-  TreeNode<std::string, int> left_node("March", 3);
-  root_node.left = &left_node;
-  root_node.right = &right_node;
 
-  ASSERT_EQ(root_node.left->data, "March");
-  ASSERT_EQ(root_node.left->key, 3);
-  ASSERT_EQ(root_node.left->height, 0);
+TEST(TreeNodeTest, SetChildren) {
+  TreeNode<int, std::string> root_node{{4, "April"}};
+  TreeNode<int, std::string> right_node{{5, "May"}};
+  TreeNode<int, std::string> left_node{{3, "March"}};
 
-  ASSERT_EQ(root_node.right->data, "May");
-  ASSERT_EQ(root_node.right->key, 5);
-  ASSERT_EQ(root_node.right->height, 0);
+  root_node.set_left(&left_node);
+  root_node.set_right(&right_node);
+
+  /* child on the both sides are set properly */
+  ASSERT_EQ("March", root_node.left()->value());
+  ASSERT_EQ(3, root_node.left()->key());
+
+  ASSERT_EQ("May", root_node.right()->value());
+  ASSERT_EQ(5, root_node.right()->key());
 }
