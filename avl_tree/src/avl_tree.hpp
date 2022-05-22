@@ -6,96 +6,150 @@
 #endif
 
 #include <algorithm>
-#include <iostream>
+#include <cmath>
 #include <stack>
-#include <utility>
+#include <utility>  /* move */
 #include <vector>
 
 #include "debug.hpp"
 #include "tree_node.hpp"
 
-
-template<typename DataType, typename KeyType>
+/*
+* @brief AVL tree is a self-balancing binary search tree (BST).
+*
+* Implements the following operations:
+*  - TreeNode<K, V>* Search(const K& key) const
+*  - void Insert(const KeyValuePair<K, V>& key_value_pair)
+*  - void Delete(const K& key)
+*/
+template<typename K, typename V>
 class AVLTree {
-  using Node = TreeNode<DataType, KeyType>;
+  using Node = TreeNode<K, V>;
 
 public:
-  // const qualifier is to prevent link-breaking from the outside.
-  // Can't Search and modify the data from the outside.
-  // Use Search(if found) + Insert(new_data, corresponding_key) to update data.
-  const Node* Search(const KeyType& key) const {
-    Node* cur = root_;
-    while (cur && key != cur->key) {
-      cur = key < cur->key ? cur->left : cur->right;
+  /**
+   * @brief Returns the node with `key` if found, otherwise null.
+   * @complex O(lg(n)): the height of the tree.
+   */
+  Node* Search(const K& key) const {
+    const Node* cur = root_;
+    while (cur && key != cur->key()) {
+      cur = key < cur->key() ? cur->left() : cur->right();
     }
-    return cur;
+    return const_cast<Node*>(cur);
   }
 
-  // In-order traversal. In ascending order with respect to keys.
-  std::vector<DataType> Traverse() const {
-    std::vector<DataType> res;
-    RecursiveTraverse_(root_, res);
-    return std::move(res);
+  /** In-order traversal. In ascending order with respect to keys. */
+  std::vector<V> Traverse() const {
+    std::vector<V> res{};
+    res.reserve(exp2(this->height()) /* approx. */);
+
+    /* Down to the left-most node first and then pop bottom-up;
+      once a left child is visited, go up a level and visit the parent,
+      then go to the right subtree and again down to its left-most node.
+      Recursively. */
+    std::stack<Node*> s{};
+    Node* cur = root_;
+    while (cur || !s.empty()) {
+      if (cur) {
+        s.push(cur);
+        cur = cur->left();
+      } else {
+        Node* node = s.top();
+        s.pop();
+        res.push_back(node->value());
+        cur = node->right();
+      }
+    }
+    return std::move(res);  /* avoid expensive copy */
   }
 
-  /** Insert the `key`-`value` pair into tree; if the key already exist, value is updated. */
-  void Insert(const DataType& data, const KeyType& key) {
-    root_ = RecursiveInsert_(root_, new Node(data, key));
+  /**
+   * @brief Insert the `key`-`value` pair into tree; if the key already exist,
+   * value is updated.
+   * @complex O(lg(n))
+   */
+  void Insert(const KeyValuePair<K, V>& key_value_pair) {
+    root_ = RecursiveInsert_(root_, new Node(key_value_pair));
   }
 
-  /** Deletes the node with `key` from the tree; no changes if the `key` doesn't exist */
-  void Delete(const KeyType& key) {
+  /**
+   * @brief Deletes the node with `key` from the tree; no changes if the `key`
+   * doesn't exist.
+   * @complex O(lg(n))
+   */
+  void Delete(const K& key) {
     root_ = RecursiveDelete_(root_, key);
   }
 
-  int Height() const {
-    return Height_(root_);
+  /** @complex O(1) */
+  int height() const {
+    return GetHeight_(root_);
   }
 
   AVLTree() = default;
 
-  // Post-order to delete children before parent.
+  /** Traverse in post-order to delete children before parent. */
   ~AVLTree() {
-    if (root_) {
-      std::stack<Node*> s;
-      s.push(root_);
-      while (!s.empty()) {
-        Node* cur = s.top();
-        // Push parent and it's right & left child in s. (delete order: left->right->parent)
-        // Mark parent's right & right null. So the time we see a Node with no child,
-        // we know it's children were already deleted and we can delete this Node, too.
-        if (!cur->left && !cur->right) {
-          s.pop();
-          delete cur;
-        }
-        if (cur->right) {
-          s.push(cur->right);
-          cur->right = nullptr;
-        }
-        if (cur->left) {
-          s.push(cur->left);
-          cur->left = nullptr;
-        }
+    if (!root_) {
+      return;
+    }
+    /* refer to
+      https://shubo.io/iterative-binary-tree-traversal/
+      for traversals */
+    std::stack<Node*> s{};
+    s.push(root_);
+    while (!s.empty()) {
+      Node* cur = s.top();
+      /* Push parent and it's right & left child in s.
+        (delete order: left -> right -> parent)
+        Mark parent's right & right as null so at the time we see a node with no
+        child, we know it's children were already deleted and we can delete
+        this node, too. */
+      if (!cur->left() && !cur->right()) {
+        s.pop();
+        delete cur;
+        cur = nullptr;
+        continue;
+      }
+      ASSERT(cur);
+      if (cur->right()) {
+        s.push(cur->right());
+        cur->set_right(nullptr);
+      }
+      if (cur->left()) {
+        s.push(cur->left());
+        cur->set_left(nullptr);
       }
     }
   }
 
 private:
-  int Height_(const Node* const node) const {
-    return node ? node->height : -1;
+  /** safe under null pointer */
+  int GetHeight_(const Node* const node) const {
+    return node ? node->height() : -1;
   }
 
-  // height left - right
+  /** height left - right */
   int BalanceFactor_(const Node* const node) const {
-    return node ? Height_(node->left) - Height_(node->right) : 0;
+    return node ? GetHeight_(node->left()) - GetHeight_(node->right()) : 0;
   }
 
-  void UpdateHeight_(Node* const node) {
+  /**
+   * Make sure you call this method on the nodes affected by insertion/deletion
+   * to maintain the height of nodes correctly.
+   */
+  void UpdateHeight_(Node* const node) const {
     ASSERT(node);
-    node->height = std::max(Height_(node->left), Height_(node->right)) + 1;
+    node->set_height(
+        std::max(GetHeight_(node->left()), GetHeight_(node->right())) + 1
+    );
   }
 
-  /** The desired `Insert` method has no return value, hidden by this helper method. */
+  /**
+   * @brief The desired `Insert` method has no return value, hidden by this helper method.
+   * @complex O(lg(n)): bottom up on the insertion path, at most the height.
+   */
   Node* RecursiveInsert_(Node* const node, Node* const new_node) {
     /* reach the leaf, insert */
     if (!node) {
@@ -103,16 +157,16 @@ private:
     }
 
     /* duplicate, implicit update */
-    if (new_node->key == node->key) {
-      node->data = new_node->data;
+    if (new_node->key() == node->key()) {
+      node->set_value(new_node->value());
       delete new_node;
       return node;  /* structure not change, balanced */
     }
 
-    if (new_node->key < node->key) {
-      node->left = RecursiveInsert_(node->left, new_node);
+    if (new_node->key() < node->key()) {
+      node->set_left(RecursiveInsert_(node->left(), new_node));
     } else {
-      node->right = RecursiveInsert_(node->right, new_node);
+      node->set_right(RecursiveInsert_(node->right(), new_node));
     }
 
     /* subtree structure has changed, re-balance */
@@ -121,51 +175,56 @@ private:
   }
 
   /**
-   * The desired `Delete` method has no return value, hidden by this helper method.
+   * @brief The desired `Delete` method has no return value, hidden by this
+   * helper method.
    *
    * When the target node is found, there are 4 conditions:
    *  (1) it's a left
    *  (2) has only right child
    *  (3) has only left child
    *  (4) has child on both side
+   *
+   * @complex O(lg(n)): bottom up on the insertion path, at most the height.
    */
-  Node* RecursiveDelete_(Node* node, const KeyType key) {
+  Node* RecursiveDelete_(Node* node, const K& key) {
     /* key not exist */
     if (!node) {
       return nullptr;
     }
 
-    if (key < node->key) {
-      node->left = RecursiveDelete_(node->left, key);
-    } else if (key > node->key) {
-      node->right = RecursiveDelete_(node->right, key);
+    if (key < node->key()) {
+      node->set_left(RecursiveDelete_(node->left(), key));
+    } else if (key > node->key()) {
+      node->set_right(RecursiveDelete_(node->right(), key));
     } else {
       /* (1) is leaf */
-      if (Height_(node) == 0) {
+      if (GetHeight_(node) == 0) {
         delete node;
         return nullptr;
       }
       /* (2) only right, link it up */
-      if (!node->left) {
-        Node* temp = node->right;
+      if (!node->left()) {
+        Node* temp = node->right();
         delete node;
         return temp;
       }
       /* (3) only left, link it up */
-      if (!node->right) {
-        Node* temp = node->left;
+      if (!node->right()) {
+        Node* temp = node->left();
         delete node;
         return temp;
       }
       /* (4) Complete node. Delete `node` by replacing it with the node which
         has the biggest key in the left subtree and turn to delete that node
-        since it's now duplicated.
+        since it's now duplicate.
         NOTE: may also replace `node` with the smallest node from right subtree.
       */
-      Node* predecessor = GetNodeWithMaxKey_(node->left);
-      node->data = predecessor->data;
-      node->key = predecessor->key;
-      node->left = RecursiveDelete_(node->left, predecessor->key);
+      Node* predecessor = GetNodeWithMaxKey_(node->left());
+      Node* replace = new Node{*predecessor};
+      replace->set_right(node->right());
+      replace->set_left(RecursiveDelete_(node->left(), predecessor->key()));
+      delete node;
+      node = replace;
     }
 
     UpdateHeight_(node);
@@ -174,19 +233,10 @@ private:
 
   /** Returns the right-most node in the right subtree. */
   Node* GetNodeWithMaxKey_(Node* root) const {
-    while (root->right) {
-      root = root->right;
+    while (root->right()) {
+      root = root->right();
     }
     return root;
-  }
-
-  void RecursiveTraverse_(const Node* const node, std::vector<DataType>& res) const {
-    if (!node) {
-      return;
-    }
-    RecursiveTraverse_(node->left, res);
-    res.push_back(node->data);
-    RecursiveTraverse_(node->right, res);
   }
 
   /**
@@ -202,22 +252,22 @@ private:
     /* left heavy */
     if (BalanceFactor_(node) > 1) {
       /* (1) left-left heavy */
-      if (node->left->left) {
+      if (node->left()->left()) {
         return RightRotate_(node);
       }
       /* (2) left-right heavy: left child rotate left + `node` rotate right */
-      node->left = LeftRotate_(node->left);
+      node->set_left(LeftRotate_(node->left()));
       return RightRotate_(node);
     }
 
     /* right heavy */
     if (BalanceFactor_(node) < -1) {
       /* (3) right-right heavy */
-      if (node->right->right) {
+      if (node->right()->right()) {
         return LeftRotate_(node);
       }
       /* (4) right-left heavy: right child rotate right + `node` rotate left */
-      node->right = RightRotate_(node->right);
+      node->set_right(RightRotate_(node->right()));
       return LeftRotate_(node);
     }
 
@@ -227,12 +277,12 @@ private:
 
   /** Rotates `node` to the left and returns the new root. */
   Node* LeftRotate_(Node* const node) {
-    Node* right_node = node->right;
-    Node* right_left_node = right_node->left;
+    Node* right_node = node->right();
+    Node* right_left_node = right_node->left();
     /* Moves the right-left node to the right,
       and then `node` to the left of the right node. */
-    node->right = right_left_node;
-    right_node->left = node;
+    node->set_right(right_left_node);
+    right_node->set_left(node);
 
     /* `node` is now under the original right node, so update `node` first. */
     UpdateHeight_(node);
@@ -243,13 +293,13 @@ private:
 
   /** Rotates `node` to the right and returns the new root. */
   Node* RightRotate_(Node* const node) {
-    Node* left_node = node->left;
-    Node* left_right_node = left_node->right;
+    Node* left_node = node->left();
+    Node* left_right_node = left_node->right();
 
     /* Moves the left-right node to the left,
       and then `node` to the right of the left node. */
-    node->left = left_right_node;
-    left_node->right = node;
+    node->set_left(left_right_node);
+    left_node->set_right(node);
 
     /* `node` is now under the orignal left node, so update `node` first. */
     UpdateHeight_(node);
@@ -258,7 +308,6 @@ private:
     return left_node;
   }
 
-
   Node* root_ = nullptr;
 };
 
@@ -266,5 +315,7 @@ private:
 #endif /* end of include guard: SRC_AVL_TREE_HPP_ */
 
 
-// Resources
-//  traversals: https://shubo.io/iterative-binary-tree-traversal/
+/*
+ * References
+ *  traversals: https://shubo.io/iterative-binary-tree-traversal/
+ */
