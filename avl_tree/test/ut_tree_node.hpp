@@ -5,7 +5,7 @@
 
 
 TEST(TreeNodeTest, ConstructNode) {
-  TreeNode<std::string> tree_node("April", 4);
+  TreeNode<std::string, int> tree_node("April", 4);
   ASSERT_EQ(tree_node.data, "April");
   ASSERT_EQ(tree_node.key, 4);
   ASSERT_EQ(tree_node.height, 0);
@@ -14,9 +14,9 @@ TEST(TreeNodeTest, ConstructNode) {
 }
 
 TEST(TreeNodeTest, SetNode) {
-  TreeNode<std::string> root_node("April", 4),
-                        right_node("May", 5),
-                        left_node("March", 3);
+  TreeNode<std::string, int> root_node("April", 4);
+  TreeNode<std::string, int> right_node("May", 5);
+  TreeNode<std::string, int> left_node("March", 3);
   root_node.left = &left_node;
   root_node.right = &right_node;
 

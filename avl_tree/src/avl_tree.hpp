@@ -1,5 +1,9 @@
-#ifndef AVL_TREE_HPP_
-#define AVL_TREE_HPP_
+#ifndef SRC_AVL_TREE_HPP_
+#define SRC_AVL_TREE_HPP_
+
+#ifndef ASSERT_DEBUG
+  #define ASSERT_DEBUG  /* enable assertion macros */
+#endif
 
 #include <algorithm>
 #include <iostream>
@@ -7,12 +11,11 @@
 #include <utility>
 #include <vector>
 
+#include "debug.hpp"
 #include "tree_node.hpp"
 
-// Incorrect order occurs after Delete,
-// but unable to find out what's wrong.
 
-template<typename DataType, typename KeyType = int>
+template<typename DataType, typename KeyType>
 class AVLTree {
   using Node = TreeNode<DataType, KeyType>;
 
@@ -20,20 +23,12 @@ public:
   // const qualifier is to prevent link-breaking from the outside.
   // Can't Search and modify the data from the outside.
   // Use Search(if found) + Insert(new_data, corresponding_key) to update data.
-  const Node* Search(const KeyType key) const {
+  const Node* Search(const KeyType& key) const {
     Node* cur = root_;
-    while (cur) {
-      if (key == cur->key) {
-        return cur;
-      }
-      else if (key < cur->key) {
-        cur = cur->left;
-      }
-      else if (key > cur->key) {
-        cur = cur->right;
-      }
+    while (cur && key != cur->key) {
+      cur = key < cur->key ? cur->left : cur->right;
     }
-    return nullptr;
+    return cur;
   }
 
   // In-order traversal. In ascending order with respect to keys.
@@ -43,23 +38,14 @@ public:
     return std::move(res);
   }
 
-  // This is a in-place insertion.
-  void Insert(const DataType& data, const KeyType key) {
-    Node* const new_node = new Node(data, key);
-    if (!root_) {
-      root_ = new_node;
-      return;
-    }
-    root_ = RecursiveInsert_(root_, new_node);
+  /** Insert the `key`-`value` pair into tree; if the key already exist, value is updated. */
+  void Insert(const DataType& data, const KeyType& key) {
+    root_ = RecursiveInsert_(root_, new Node(data, key));
   }
 
-  // false if try to delete non-existent Node
-  bool Delete(const KeyType key) {
-    if (!Search(key)) {
-      return false;
-    }
+  /** Deletes the node with `key` from the tree; no changes if the `key` doesn't exist */
+  void Delete(const KeyType& key) {
     root_ = RecursiveDelete_(root_, key);
-    return true;
   }
 
   int Height() const {
@@ -105,74 +91,90 @@ private:
   }
 
   void UpdateHeight_(Node* const node) {
+    ASSERT(node);
     node->height = std::max(Height_(node->left), Height_(node->right)) + 1;
   }
 
+  /** The desired `Insert` method has no return value, hidden by this helper method. */
   Node* RecursiveInsert_(Node* const node, Node* const new_node) {
-    // if key duplicates, just update the data
+    /* reach the leaf, insert */
+    if (!node) {
+      return new_node;
+    }
+
+    /* duplicate, implicit update */
     if (new_node->key == node->key) {
       node->data = new_node->data;
       delete new_node;
-      return node;
+      return node;  /* structure not change, balanced */
     }
+
     if (new_node->key < node->key) {
-      if (node->left) {
-        node->left = RecursiveInsert_(node->left, new_node);
-      } else {
-        node->left = new_node;
-      }
+      node->left = RecursiveInsert_(node->left, new_node);
+    } else {
+      node->right = RecursiveInsert_(node->right, new_node);
     }
-    else if (new_node->key > node->key) {
-      if (node->right) {
-        node->right = RecursiveInsert_(node->right, new_node);
-      } else {
-        node->right = new_node;
-      }
-    }
+
+    /* subtree structure has changed, re-balance */
     UpdateHeight_(node);
     return MakeBalance_(node);
   }
 
+  /**
+   * The desired `Delete` method has no return value, hidden by this helper method.
+   *
+   * When the target node is found, there are 4 conditions:
+   *  (1) it's a left
+   *  (2) has only right child
+   *  (3) has only left child
+   *  (4) has child on both side
+   */
   Node* RecursiveDelete_(Node* node, const KeyType key) {
+    /* key not exist */
+    if (!node) {
+      return nullptr;
+    }
+
     if (key < node->key) {
       node->left = RecursiveDelete_(node->left, key);
-    }
-    else if (key > node->key) {
+    } else if (key > node->key) {
       node->right = RecursiveDelete_(node->right, key);
-    }
-    else {
-      // case 1: is leaf
-      if (!Height_(node)) {
+    } else {
+      /* (1) is leaf */
+      if (Height_(node) == 0) {
         delete node;
         return nullptr;
       }
-      // case 2: only right, link it up
-      else if (!node->left) {
+      /* (2) only right, link it up */
+      if (!node->left) {
         Node* temp = node->right;
         delete node;
         return temp;
       }
-      // case 3: only left, link it up
-      else if (!node->right) {
+      /* (3) only left, link it up */
+      if (!node->right) {
         Node* temp = node->left;
         delete node;
         return temp;
       }
-      // case 4: complete node. Let the node with biggest key from the left subtree
-      //         up and recursively delete it.
-      else {
-        Node* predecessor = GetNodeWithMaxKey_(node->left);
-        node->data = predecessor->data;
-        node->key = predecessor->key;
-        node->left = RecursiveDelete_(node->left, predecessor->key);
-      }
+      /* (4) Complete node. Delete `node` by replacing it with the node which
+        has the biggest key in the left subtree and turn to delete that node
+        since it's now duplicated.
+        NOTE: may also replace `node` with the smallest node from right subtree.
+      */
+      Node* predecessor = GetNodeWithMaxKey_(node->left);
+      node->data = predecessor->data;
+      node->key = predecessor->key;
+      node->left = RecursiveDelete_(node->left, predecessor->key);
     }
+
     UpdateHeight_(node);
     return MakeBalance_(node);
   }
 
+  /** Returns the right-most node in the right subtree. */
   Node* GetNodeWithMaxKey_(Node* root) const {
-    if (root->right) {
+    while (root->right) {
       root = root->right;
     }
     return root;
@@ -187,54 +189,69 @@ private:
     RecursiveTraverse_(node->right, res);
   }
 
+  /**
+   * Makes the tree rooted by `node` baclanced and returns the new root.
+   * There are 5 conditions:
+   *  (1) left-left heavy
+   *  (2) left-right heavy
+   *  (3) right-right heavy
+   *  (4) right-left heavy
+   *  (5) balanced
+   */
   Node* MakeBalance_(Node* const node) {
-    // left too heavy
+    /* left heavy */
     if (BalanceFactor_(node) > 1) {
-      // left-left heavy
+      /* (1) left-left heavy */
       if (node->left->left) {
         return RightRotate_(node);
       }
-      else {  // left-right heavy
-        node->left = LeftRotate_(node->left);
-        return RightRotate_(node);
-      }
+      /* (2) left-right heavy: left child rotate left + `node` rotate right */
+      node->left = LeftRotate_(node->left);
+      return RightRotate_(node);
     }
-    // right too high
-    else if (BalanceFactor_(node) < -1) {
-      // right-right heavy
+
+    /* right heavy */
+    if (BalanceFactor_(node) < -1) {
+      /* (3) right-right heavy */
       if (node->right->right) {
         return LeftRotate_(node);
       }
-      else {  // right-left heavy
-        node->right = RightRotate_(node->right);
-        return LeftRotate_(node);
-      }
+      /* (4) right-left heavy: right child rotate right + `node` rotate left */
+      node->right = RightRotate_(node->right);
+      return LeftRotate_(node);
     }
+
+    /* (5) already (still) balanced */
     return node;
   }
 
+  /** Rotates `node` to the left and returns the new root. */
   Node* LeftRotate_(Node* const node) {
     Node* right_node = node->right;
     Node* right_left_node = right_node->left;
-
+    /* Moves the right-left node to the right,
+      and then `node` to the left of the right node. */
     node->right = right_left_node;
     right_node->left = node;
 
-    // "node" is now under "right_node", so update "node" first.
+    /* `node` is now under the original right node, so update `node` first. */
     UpdateHeight_(node);
     UpdateHeight_(right_node);
 
     return right_node;
   }
 
+  /** Rotates `node` to the right and returns the new root. */
   Node* RightRotate_(Node* const node) {
     Node* left_node = node->left;
     Node* left_right_node = left_node->right;
 
+    /* Moves the left-right node to the left,
+      and then `node` to the right of the left node. */
     node->left = left_right_node;
     left_node->right = node;
 
-    // "node" is now under "left_node", so update "node" first.
+    /* `node` is now under the orignal left node, so update `node` first. */
     UpdateHeight_(node);
     UpdateHeight_(left_node);
 
@@ -243,11 +260,10 @@ private:
 
 
   Node* root_ = nullptr;
-
 };
 
 
-#endif /* end of include guard: AVL_TREE_HPP_ */
+#endif /* end of include guard: SRC_AVL_TREE_HPP_ */
 
 
 // Resources

@@ -2,14 +2,16 @@
 
 #include <cmath>
 #include <gtest/gtest.h>
-#include <string>
 #include <iostream>
+#include <string>
+
+#include "../src/tree_node.hpp"
 
 
 class AVLTreeTest : public ::testing::Test {
 protected:
   void SetUp() override {
-    ASSERT_EQ(0, TreeNode<std::string>::leak_count);
+    ASSERT_EQ(0, (TreeNode<std::string, int>::leak_count));
     month_tree_.Insert("June", 6);
     month_tree_.Insert("March", 3);
     month_tree_.Insert("September", 9);
@@ -24,12 +26,12 @@ protected:
     month_tree_.Insert("July", 7);
   }
 
-  AVLTree<std::string> month_tree_;
-  AVLTree<int> tree_;
+  AVLTree<std::string, int> month_tree_;
+  AVLTree<int, int> tree_;
 };
 
-TEST_F(AVLTreeTest, Insert) {
-  month_tree_.Insert("updated_Oct", 10);
+TEST_F(AVLTreeTest, UpdateImplicitlyByInsert) {
+  month_tree_.Insert("<October>", 10);
 
   const std::vector<std::string> months = month_tree_.Traverse();
   ASSERT_EQ(12, months.size());
@@ -42,7 +44,7 @@ TEST_F(AVLTreeTest, Insert) {
   ASSERT_EQ("July",      months.at(6));
   ASSERT_EQ("August",    months.at(7));
   ASSERT_EQ("September", months.at(8));
-  ASSERT_EQ("updated_Oct",   months.at(9));
+  ASSERT_EQ("<October>", months.at(9));
   ASSERT_EQ("November",  months.at(10));
   ASSERT_EQ("December",  months.at(11));
 }

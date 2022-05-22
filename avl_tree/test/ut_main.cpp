@@ -1,3 +1,7 @@
+#ifndef MEM_DEBUG
+  #define MEM_DEBUG
+#endif
+
 #include <gtest/gtest.h>
 
 #include "ut_avl_tree.hpp"
