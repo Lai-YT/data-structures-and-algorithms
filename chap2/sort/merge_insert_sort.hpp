@@ -9,8 +9,6 @@
 // worst case: nlogn
 // excersise p.40
 
-void Merge(std::vector<int>& a, int head, int mid, int tail);
-
 namespace misort {
   // an insertion sort that takes pointer is much more slower than a normol one,
   // which takes the whole vector
@@ -28,15 +26,14 @@ namespace misort {
 
 }  // end namespace misort
 
-// head and tail are both included, so notice that the size is (tail - head + 1)
 void MergInsertSort(std::vector<int>& a, int head, int tail) {
   if (tail - head <= 7) {
-    misort::PtrInsertSort(a.begin() + head, tail - head + 1);
+    misort::PtrInsertSort(a.begin() + head, tail - head);
     return;
   }
   int mid = (head + tail) / 2;
   MergInsertSort(a, head, mid);
-  MergInsertSort(a, mid + 1, tail);
+  MergInsertSort(a, mid, tail);
   Merge(a, head, mid, tail);
 }
 

@@ -46,7 +46,7 @@ int main(int argc, char const *argv[]) {
   { // merge sort test space
 
     std::vector<int> a = {31, 41, 59, 26, 41, 58};
-    MergeSort(a, 0, a.size() - 1);
+    MergeSort(a, 0, a.size());
 
     std::cout << "merge sort: ";
     for (int n : a) {

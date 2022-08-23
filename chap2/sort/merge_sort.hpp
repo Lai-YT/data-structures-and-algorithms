@@ -6,49 +6,60 @@
 // worst case: nlgn
 // best case: nlgn
 // pseudocode at p.31 and p.34, no sentinel at p.37
+// CHANGE_LOG:
+//  8/23/2022: (1) No more following the pseudocode, but still not using C++ specific syntax,
+//             such as range copy.
+//             (2) Use closed-open interval, as the convention.
 
-void Merge(std::vector<int>& a, int head, int mid, int tail) {
-  int n1 = mid - head + 1, n2 = tail - mid;
-  std::vector<int> left(n1), right(n2);
-  for (size_t i = 0; i < n1; ++i) {
-    left[i] = a[i + head];
+std::vector<int> CopySubVector(
+    const std::vector<int>& v, const size_t begin_index, const size_t end_index) {
+  std::vector<int> copy(end_index - begin_index);
+  for (size_t i = begin_index; i < end_index; ++i) {
+    copy[i - begin_index] = v[i];
   }
-  for (size_t i = 0; i < n2; ++i) {
-    right[i] = a[i + mid + 1];
-  }
+  return copy;
+}
 
-  int i = 0, j = 0, k = head;
-  while (i != n1 && j != n2) {
-    if (left[i] <= right[j]) {
-      a[k] = left[i];
-      i = i + 1;
+void Merge(std::vector<int>& v, const size_t head, const size_t mid, const size_t tail) {
+  const std::vector<int> left  = CopySubVector(v, head, mid);
+  const std::vector<int> right = CopySubVector(v, mid, tail);
+
+  int left_index  = 0;
+  int right_index = 0;
+  int v_index     = head;
+  while (left_index != left.size() && right_index != right.size()) {
+    // put the smaller one back
+    if (left[left_index] <= right[right_index]) {
+      v[v_index] = left[left_index];
+      ++left_index;
     } else {
-      a[k] = right[j];
-      j = j + 1;
+      v[v_index] = right[right_index];
+      ++right_index;
     }
-    k = k + 1;
+    ++v_index;
   }
 
-  // no sentinel
-  while (i != n1) {
-    a[k] = left[i];
-    i = i + 1;
-    k = k + 1;
+  // put all remaining elements back
+  while (left_index != left.size()) {
+    v[v_index] = left[left_index];
+    ++left_index;
+    ++v_index;
   }
-  while (j != n2) {
-    a[k] = right[j];
-    j = j + 1;
-    k = k + 1;
+  while (right_index != right.size()) {
+    v[v_index] = right[right_index];
+    ++right_index;
+    ++v_index;
   }
 }  // end Merge
 
-// head and tail are both included
-void MergeSort(std::vector<int>& a, int head, int tail) {
-  if (head >= tail) return;
-  int mid = (head + tail) / 2;
-  MergeSort(a, head, mid);
-  MergeSort(a, mid + 1, tail);
-  Merge(a, head, mid, tail);
+void MergeSort(std::vector<int>& v, const size_t head, const size_t tail) {
+  if (tail - head <= 1) {
+    return;
+  }
+  const size_t mid = (head + tail) / 2;
+  MergeSort(v, head, mid);
+  MergeSort(v, mid, tail);
+  Merge(v, head, mid, tail);
 }
 
 #endif /* tail of include guard: MERGE_SORT_HPP_ */
