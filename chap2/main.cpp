@@ -6,68 +6,61 @@
 #include "sort/merge_insert_sort.hpp"
 #include "sort/select_sort.hpp"
 
+
+void PrintArray(const std::vector<int> array);
+
 // array at p.22
 int main(int argc, char const *argv[]) {
 
+  const std::vector<int> ARRAY = {31, 41, 59, 26, 41, 58};
+
   { // insertion sort test space
-    std::vector<int> a = {31, 41, 59, 26, 41, 58};
+    std::vector<int> a = ARRAY;
     InsertSort(a);
-
-    std::cout << "insertion sort: ";
-    for (int n : a) {
-      std::cout << n << ' ';
-    }
-    std::cout << '\n';
-
-    std::vector<int> b = {31, 41, 59, 26, 41, 58};
-    IterInsertSort(b);
-
     std::cout << "insertion sort (iterative): ";
-    for (int n : b) {
-      std::cout << n << ' ';
-    }
-    std::cout << '\n';
+    PrintArray(a);
+
+    std::vector<int> b = ARRAY;
+    RecurInsertSort(b);
+    std::cout << "insertion sort (recursive): ";
+    PrintArray(b);
 
   } // end
 
   { // selection sort test space
 
-    std::vector<int> a = {31, 41, 59, 26, 41, 58};
+    std::vector<int> a = ARRAY;
     SelectSort(a);
-
     std::cout << "selection sort: ";
-    for (int n : a) {
-      std::cout << n << ' ';
-    }
-    std::cout << '\n';
+    PrintArray(a);
 
   } // end
 
   { // merge sort test space
 
-    std::vector<int> a = {31, 41, 59, 26, 41, 58};
+    std::vector<int> a = ARRAY;
     MergeSort(a, 0, a.size());
-
     std::cout << "merge sort: ";
-    for (int n : a) {
-      std::cout << n << ' ';
-    }
-    std::cout << '\n';
+    PrintArray(a);
 
   } // end
 
   { // merge-insertion sort test space
 
-    std::vector<int> a = {31, 41, 59, 26, 41, 58};
-    MergInsertSort(a, 0, a.size() - 1);
-
+    std::vector<int> a = ARRAY;
+    MergInsertSort(a, 0, a.size());
     std::cout << "merge-insertion sort: ";
-    for (int n : a) {
-      std::cout << n << ' ';
-    }
-    std::cout << '\n';
+    PrintArray(a);
 
   } // end
 
   return 0;
+}
+
+
+void PrintArray(const std::vector<int> array) {
+  for (const int n : array) {
+    std::cout << n << ' ';
+  }
+  std::cout << '\n';
 }
