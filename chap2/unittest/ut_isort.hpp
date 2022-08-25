@@ -31,7 +31,7 @@ TEST_F(IsortTest, Size500Time1000) {
 
 TEST_F(IsortTest, RecursiveSize500Time1000) {
   std::srand(std::time(0));
-  for (size_t i = 0; i < 1000; ++i) {
+  for (size_t i = 0; i < ITERATION_COUNT; ++i) {
     std::vector<int> actual = RandomArray(TEST_ARRAY_SIZE, 0, TEST_ARRAY_SIZE * 2);
     std::vector<int> expected(actual);
     std::sort(expected.begin(), expected.end());
