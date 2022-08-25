@@ -2,31 +2,42 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <gtest/gtest.h>
 #include <vector>
+
 
 #include "../util/random.hpp"
 
 // randomly generate 1000 arrays, each with length 500,
 // use std::sort to test if insertion sort (and iterative) sorts correctly
+class IsortTest : public ::testing::Test {
+protected:
+  const int TEST_ARRAY_SIZE = 500;
+  const int ITERATION_COUNT = 1000;
+};
 
-TEST(IsortTest, Size500Time1000) {
+TEST_F(IsortTest, Size500Time1000) {
   std::srand(std::time(0));
-  for (size_t i = 0; i < 1000; ++i) {
-    std::vector<int> a = RandomArray(500, 0, 1000);
-    std::vector<int> stdSorted(a);
-    std::sort(stdSorted.begin(), stdSorted.end());
-    InsertSort(a);
-    ASSERT_EQ(stdSorted, a);
+  for (size_t i = 0; i < ITERATION_COUNT; ++i) {
+    std::vector<int> actual = RandomArray(TEST_ARRAY_SIZE, 0, TEST_ARRAY_SIZE * 2);
+    std::vector<int> expected(actual);
+    std::sort(expected.begin(), expected.end());
+
+    InsertSort(actual);
+
+    ASSERT_EQ(expected, actual);
   }
 }
 
-TEST(RecurIsortTest, Size500Time1000) {
+TEST_F(IsortTest, RecursiveSize500Time1000) {
   std::srand(std::time(0));
   for (size_t i = 0; i < 1000; ++i) {
-    std::vector<int> a = RandomArray(500, 0, 1000);
-    std::vector<int> stdSorted(a);
-    std::sort(stdSorted.begin(), stdSorted.end());
-    RecurInsertSort(a);
-    ASSERT_EQ(stdSorted, a);
+    std::vector<int> actual = RandomArray(TEST_ARRAY_SIZE, 0, TEST_ARRAY_SIZE * 2);
+    std::vector<int> expected(actual);
+    std::sort(expected.begin(), expected.end());
+
+    RecurInsertSort(actual);
+
+    ASSERT_EQ(expected, actual);
   }
 }

@@ -11,11 +11,14 @@
 
 TEST(SsortTest, Size500Time1000) {
   std::srand(std::time(0));
+  const int TEST_ARRAY_SIZE = 500;
   for (size_t i = 0; i < 1000; ++i) {
-    std::vector<int> a = RandomArray(500, 0, 1000);
-    std::vector<int> stdSorted(a);
-    std::sort(stdSorted.begin(), stdSorted.end());
-    SelectSort(a);
-    ASSERT_EQ(stdSorted, a);
+    std::vector<int> actual = RandomArray(TEST_ARRAY_SIZE, 0, TEST_ARRAY_SIZE * 2);
+    std::vector<int> expected(actual);
+    std::sort(expected.begin(), expected.end());
+
+    SelectSort(actual);
+
+    ASSERT_EQ(expected, actual);
   }
 }
