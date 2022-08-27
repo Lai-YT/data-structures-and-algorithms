@@ -1,7 +1,6 @@
 #include "../spec/merge_inversions.hpp"
 
 #include <cstdlib>
-#include <iostream>
 #include <vector>
 
 #include "../spec/brute_force_inversions.hpp"
@@ -12,11 +11,13 @@
 
 TEST(MergInverTest, i500) {
   std::srand(std::time(0));
-  for (size_t i = 0; i < 1; ++i) {
-    std::vector<int> a = RandomArray(500, 0, 1000);
-    int expect_invers = 0, act_invers = 0;
-    expect_invers = BruteForceInversions(a);
-    act_invers = CountInversions(a, 0, a.size() - 1);
-    ASSERT_EQ(expect_invers, act_invers);
+  const int TEST_ARRAY_SIZE = 500;
+  for (size_t i = 0; i < 1000; ++i) {
+    std::vector<int> array = RandomArray(TEST_ARRAY_SIZE, 0, TEST_ARRAY_SIZE * 2);
+    const int expect_invers = BruteForceInversions(array);
+
+    const int actual_invers = inv::CountInversions(array);
+
+    ASSERT_EQ(expect_invers, actual_invers);
   }
 }

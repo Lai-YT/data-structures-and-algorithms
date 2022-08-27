@@ -1,60 +1,75 @@
 #ifndef MERGE_INVERSIONS_HPP_
 #define MERGE_INVERSIONS_HPP_
 
-// this is an incomplete broken file
+/**
+ * What Merge Sort does when merging is exactly moving the inversions,
+ * so by performing a single merge sort and counting these moves,
+ * we obtain the number of inversions.
+ * This takes O(nlgn)
+ */
 
 #include <vector>
 
-// time complexity: nlgn
 
-int MergeInversions(std::vector<int>& a, int head, int mid, int tail) {
-  int n1 = mid - head + 1;
-  int n2 = tail - mid;
-  std::vector<int> left(a.begin() + head, a.begin() + mid + 1);
-  std::vector<int> right(a.begin() + mid + 1, a.begin() + tail + 1);
+namespace inv {
 
-  int i = 0, j = 0, k = 0;  // i for left, j for right, k for a
+std::vector<int> CopySubVector(
+    const std::vector<int>& array, const size_t begin_index, const size_t end_index) {
+  std::vector<int> copy(end_index - begin_index);
+  for (size_t i = begin_index; i < end_index; ++i) {
+    copy[i - begin_index] = array[i];
+  }
+  return copy;
+}
+
+int CountInversionsInMerge(
+    std::vector<int>& array, const size_t head, const size_t mid, const size_t tail) {
+  const std::vector<int> left = CopySubVector(array, head, mid);
+  const std::vector<int> right = CopySubVector(array, mid, tail);
+
   int inversions = 0;
-  bool counted = false;
-  while (k <= tail && i <= n1 && j <= n2) {
-    if (!counted && right[j] < left[i]) {
-      // every remain element in left is a inversion-count
-      inversions += n1 - i + 1;
-      counted = true;
-    }
-    if (left[i] <= right[j]) {
-      a[k] = left[i];
-      i = i + 1;
+  int left_index = 0;
+  int right_index = 0;
+  int array_index = head;
+  while (left_index != left.size() && right_index != right.size()) {
+    if (left[left_index] > right[right_index]) {
+      array[array_index++] = right[right_index++];
+      // Left greater than right, inversion!
+      // All remainings in left is a count.
+      inversions += left.size() - left_index;
     } else {
-      a[k] = right[j];
-      j = j + 1;
-      counted = false;
+      array[array_index++] = left[left_index++];
     }
-    k = k + 1;
-  }
-  while (j <= n2) {
-    a[k] = right[j];
-    j = j + 1;
-    k = k + 1;
-  }
-  while (i <= n1) {
-    a[k] = left[i];
-    i = i + 1;
-    k = k + 1;
   }
 
+  while (left_index != left.size()) {
+    array[array_index++] = left[left_index++];
+  }
+  while (right_index != right.size()) {
+    array[array_index++] = right[right_index++];
+  }
   return inversions;
-}
+}  // end Merge
 
-int CountInversions(std::vector<int>& a, int head, int tail) {
+/* NOTICE: Don't directly use this function to count inversions, which modifies the input array. */
+int CountInversions(std::vector<int>& array, const size_t head, const size_t tail) {
+  if (tail - head <= 1) {
+    return 0;
+  }
   int inversions = 0;
-  if (head < tail) {
-    int mid = (head + tail) / 2;
-    inversions += CountInversions(a, head, mid);
-    inversions += CountInversions(a, mid + 1, tail);
-    inversions += MergeInversions(a, head, mid, tail);
-  }
+  const size_t mid = (head + tail) / 2;
+  inversions += CountInversions(array, head, mid);
+  inversions += CountInversions(array, mid, tail);
+  inversions += CountInversionsInMerge(array, head, mid, tail);
   return inversions;
 }
+
+int CountInversions(const std::vector<int>& array) {
+  std::vector<int> copy_to_avoid_modification{array};
+  return CountInversions(copy_to_avoid_modification, 0, array.size());
+}
+
+}
+
 
 #endif /* end of include guard: MERGE_INVERSIONS_HPP_ */
