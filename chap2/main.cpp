@@ -2,12 +2,12 @@
 #include <vector>
 
 #include "sort/insert_sort.hpp"
-#include "sort/merge_sort.hpp"
 #include "sort/merge_insert_sort.hpp"
+#include "sort/merge_sort.hpp"
 #include "sort/select_sort.hpp"
 
 
-void PrintArray(const std::vector<int> array);
+void PrintArray(const std::vector<int>& array);
 
 // array at p.22
 int main(int argc, char const *argv[]) {
@@ -15,6 +15,7 @@ int main(int argc, char const *argv[]) {
   const std::vector<int> ARRAY = {31, 41, 59, 26, 41, 58};
 
   { // insertion sort test space
+
     std::vector<int> a = ARRAY;
     InsertSort(a);
     std::cout << "insertion sort (iterative): ";
@@ -58,7 +59,7 @@ int main(int argc, char const *argv[]) {
 }
 
 
-void PrintArray(const std::vector<int> array) {
+void PrintArray(const std::vector<int>& array) {
   for (const int n : array) {
     std::cout << n << ' ';
   }
