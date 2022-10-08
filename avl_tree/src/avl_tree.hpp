@@ -69,8 +69,8 @@ public:
    * value is updated.
    * @complex O(lg(n))
    */
-  void Insert(const KeyValuePair<K, V>& key_value_pair) {
-    root_ = RecursiveInsert_(root_, new Node(key_value_pair));
+  void Insert(const KeyValuePair<K, V>& p) {
+    root_ = RecursiveInsert_(root_, new Node(p));
   }
 
   /**

@@ -19,8 +19,8 @@
 template<typename K, typename V>
 class TreeNode {
 public:
-  TreeNode(const KeyValuePair<K, V>& key_value_pair)
-      : key_{key_value_pair.key}, value_{key_value_pair.value}, height_{0} {
+  TreeNode(const KeyValuePair<K, V> p)
+      : key_{p.key}, value_{p.value}, height_{0} {
 #ifdef MEM_DEBUG
     ++leak_count;
 #endif
@@ -48,7 +48,7 @@ public:
     return left_;
   }
 
-  void set_left(TreeNode<K, V>* const node) {
+  void set_left(TreeNode<K, V>* node) {
     left_ = node;
   }
 
@@ -56,7 +56,7 @@ public:
     return right_;
   }
 
-  void set_right(TreeNode<K, V>* const node) {
+  void set_right(TreeNode<K, V>* node) {
     right_ = node;
   }
 
@@ -68,7 +68,7 @@ public:
     the time complexity would be O(n). To solve this, we will have the tree
     maintain the height of nodes, which means tree will have to adjust height
     of all nodes affected by insertion/deletion, but still keep them O(lg(n)). */
-  void set_height(const int height) {
+  void set_height(int height) {
     height_ = height;
   }
 
