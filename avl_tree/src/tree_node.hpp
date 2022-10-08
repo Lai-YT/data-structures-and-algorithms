@@ -11,7 +11,7 @@
 
  template<typename K /* key */, typename V /* value */>
  struct KeyValuePair {
-   const K key;
+   K key;
    V value;
  };
 
@@ -77,7 +77,7 @@ public:
 #endif
 
 private:
-  const K key_;
+  K key_;
   V value_;
   int height_;
   /* not taking ownership of any of the children */
