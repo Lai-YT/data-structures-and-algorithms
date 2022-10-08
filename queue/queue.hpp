@@ -6,8 +6,9 @@ template<typename T>
 class CircularQueue {
 public:
   CircularQueue(const int capacity)
-      : capacity_(capacity + 1), front_(0), rear_(0) {
-    q_ = new T[capacity];
+      : buf_size_(capacity + 1), front_(0), rear_(0) {
+    /* one space unused to differentiate full from empty */
+    q_ = new T[buf_size_];
   }
 
   ~CircularQueue() {
@@ -17,13 +18,13 @@ public:
   void Enqueue(const T& data) {
     if (!IsFull()) {
       q_[rear_] = data;
-      rear_ = (rear_ + 1) % capacity_;
+      rear_ = (rear_ + 1) % buf_size_;
     }
   }
 
   void Dequeue() {
     if (!IsEmpty()) {
-      front_ = (front_ + 1) % capacity_;
+      front_ = (front_ + 1) % buf_size_;
     }
   }
 
@@ -32,7 +33,7 @@ public:
   }
 
   int size() const {
-    return (capacity_ + (rear_ - front_)) % capacity_;
+    return (buf_size_ + (rear_ - front_)) % buf_size_;
   }
 
   bool IsEmpty() const {
@@ -40,14 +41,14 @@ public:
   }
 
   bool IsFull() const {
-    return front_ - rear_ == 1;
+    return (rear_ + 1) % buf_size_ == front_;
   }
 
 private:
   T* q_;
   int front_;
-  int rear_;
-  int capacity_;
+  int rear_; /* points to the "next" space to enqueue */
+  int buf_size_;
 };
 
 
