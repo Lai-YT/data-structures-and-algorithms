@@ -5,8 +5,8 @@
   #define ASSERT_DEBUG  /* enable assertion macros */
 #endif
 
-#include <algorithm>
-#include <cmath>
+#include <algorithm>  /* max */
+#include <cmath>  /* exp2 */
 #include <optional>
 #include <stack>
 #include <utility>  /* move */
@@ -77,7 +77,7 @@ public:
    * @complex O(lg(n))
    */
   void Insert(const KeyValuePair<K, V>& p) {
-    root_ = RecursiveInsert_(root_, new Node(p));
+    root_ = RecursiveInsert_(root_, new Node{p});
   }
 
   /**
@@ -101,17 +101,14 @@ public:
     if (!root_) {
       return;
     }
-    /* refer to
-      https://shubo.io/iterative-binary-tree-traversal/
-      for traversals */
     std::stack<Node*> s{};
     s.push(root_);
     while (!s.empty()) {
       Node* cur = s.top();
-      /* Push parent and it's right & left child in s.
+      /* Push parent and its right & left child into s.
         (delete order: left -> right -> parent)
-        Mark parent's right & right as null so at the time we see a node with no
-        child, we know it's children were already deleted and we can delete
+        Mark parent's right & left as null so at the time we see a node with no
+        child, we know its children were already deleted and we can delete
         this node, too. */
       if (!cur->left() && !cur->right()) {
         s.pop();
@@ -193,7 +190,7 @@ private:
    *  (3) has only left child
    *  (4) has child on both side
    *
-   * @complex O(lg(n)): bottom up on the insertion path, at most the height.
+   * @complex O(lg(n)): bottom up on the deletion path, at most the height.
    */
   Node* RecursiveDelete_(Node* node, const K& key) {
     /* key not exist */
@@ -226,8 +223,8 @@ private:
       /* (4) Complete node. Delete `node` by replacing it with the node which
         has the biggest key in the left subtree and turn to delete that node
         since it's now duplicate.
-        NOTE: may also replace `node` with the smallest node from right subtree.
-      */
+        NOTE: may alternatively replace `node` with the smallest node from the
+        right subtree. */
       Node* predecessor = GetNodeWithMaxKey_(node->left());
       Node* replace = new Node{*predecessor};
       replace->set_right(node->right());
@@ -249,7 +246,7 @@ private:
   }
 
   /**
-   * Makes the tree rooted by `node` baclanced and returns the new root.
+   * Makes the tree rooted by `node` balanced and returns the new root.
    * There are 5 conditions:
    *  (1) left-left heavy
    *  (2) left-right heavy
@@ -310,7 +307,7 @@ private:
     node->set_left(left_right_node);
     left_node->set_right(node);
 
-    /* `node` is now under the orignal left node, so update `node` first. */
+    /* `node` is now under the original left node, so update `node` first. */
     UpdateHeight_(node);
     UpdateHeight_(left_node);
 
