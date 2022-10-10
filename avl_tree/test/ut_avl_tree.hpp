@@ -160,7 +160,7 @@ TEST_F(AVLTreeTest, RightLeftRotate) {
 /**
  * If N elements are inserted, the height of the tree should be smaller than
  * 1.5lg(N) (strictly 1.44 with some constants).
- * NOTE: this is not unser worst case.
+ * NOTE: this is not under worst case.
  */
 TEST_F(AVLTreeTest, BalanceProperly) {
   const int N = 100001;
