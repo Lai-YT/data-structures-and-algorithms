@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <stack>
 #include <utility>  /* move */
 #include <vector>
@@ -18,7 +19,7 @@
 * @brief AVL tree is a self-balancing binary search tree (BST).
 *
 * Implements the following operations:
-*  - TreeNode<K, V>* Search(const K& key) const
+*  - std::optional<V> Search(const K& key) const
 *  - void Insert(const KeyValuePair<K, V>& key_value_pair)
 *  - void Delete(const K& key)
 */
@@ -28,15 +29,18 @@ class AVLTree {
 
 public:
   /**
-   * @brief Returns the node with `key` if found, otherwise null.
+   * @brief Returns an optional object, contains the value of the node with `key` if found.
+   *
+   * Modifying the returned value does not affect the tree.
+   *
    * @complex O(lg(n)): the height of the tree.
    */
-  Node* Search(const K& key) const {
+  std::optional<V> Search(const K& key) const {
     const Node* cur = root_;
     while (cur && key != cur->key()) {
       cur = key < cur->key() ? cur->left() : cur->right();
     }
-    return const_cast<Node*>(cur);
+    return cur ? std::optional(cur->value()) : std::optional<V>();
   }
 
   /** In-order traversal. In ascending order with respect to keys. */
@@ -125,6 +129,8 @@ public:
   }
 
 private:
+  Node* root_ = nullptr;
+
   /** safe under null pointer */
   int GetHeight_(const Node* const node) const {
     return node ? node->height() : -1;
@@ -307,8 +313,6 @@ private:
 
     return left_node;
   }
-
-  Node* root_ = nullptr;
 };
 
 

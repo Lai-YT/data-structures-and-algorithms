@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <gtest/gtest.h>
+#include <optional>
 #include <string>
 
 #include "../src/tree_node.hpp"
@@ -57,21 +58,30 @@ TEST_F(AVLTreeTest, UpdateImplicitlyByInsert) {
 
 
 TEST_F(AVLTreeTest, Search) {
-  ASSERT_EQ("January",   month_tree_.Search(1)->value());
-  ASSERT_EQ("February",  month_tree_.Search(2)->value());
-  ASSERT_EQ("March",     month_tree_.Search(3)->value());
-  ASSERT_EQ("April",     month_tree_.Search(4)->value());
-  ASSERT_EQ("May",       month_tree_.Search(5)->value());
-  ASSERT_EQ("June",      month_tree_.Search(6)->value());
-  ASSERT_EQ("July",      month_tree_.Search(7)->value());
-  ASSERT_EQ("August",    month_tree_.Search(8)->value());
-  ASSERT_EQ("September", month_tree_.Search(9)->value());
-  ASSERT_EQ("October",   month_tree_.Search(10)->value());
-  ASSERT_EQ("November",  month_tree_.Search(11)->value());
-  ASSERT_EQ("December",  month_tree_.Search(12)->value());
+  ASSERT_EQ("January",   month_tree_.Search(1).value());
+  ASSERT_EQ("February",  month_tree_.Search(2).value());
+  ASSERT_EQ("March",     month_tree_.Search(3).value());
+  ASSERT_EQ("April",     month_tree_.Search(4).value());
+  ASSERT_EQ("May",       month_tree_.Search(5).value());
+  ASSERT_EQ("June",      month_tree_.Search(6).value());
+  ASSERT_EQ("July",      month_tree_.Search(7).value());
+  ASSERT_EQ("August",    month_tree_.Search(8).value());
+  ASSERT_EQ("September", month_tree_.Search(9).value());
+  ASSERT_EQ("October",   month_tree_.Search(10).value());
+  ASSERT_EQ("November",  month_tree_.Search(11).value());
+  ASSERT_EQ("December",  month_tree_.Search(12).value());
   /* not found */
-  ASSERT_TRUE(month_tree_.Search(0) == nullptr);
-  ASSERT_TRUE(month_tree_.Search(13) == nullptr);
+  ASSERT_FALSE(month_tree_.Search(0).has_value());
+  ASSERT_FALSE(month_tree_.Search(13).has_value());
+}
+
+
+TEST_F(AVLTreeTest, ChangingValueReturnedBySearchShouldNotAffectTheTree) {
+  std::optional<std::string> first_month = month_tree_.Search(1);
+
+  *first_month = "x";
+
+  ASSERT_EQ("January", month_tree_.Search(1).value());
 }
 
 
@@ -172,7 +182,7 @@ TEST_F(AVLTreeTest, BalanceProperly) {
 
 /**
  * Deletes 4 months from the month tree.
- * NOTE: target selection has not special meanings.
+ * NOTE: target selection has no special meanings.
  */
 TEST_F(AVLTreeTest, Delete_1) {
   month_tree_.Delete(1);
@@ -180,24 +190,24 @@ TEST_F(AVLTreeTest, Delete_1) {
   month_tree_.Delete(7);
   month_tree_.Delete(11);
 
-  ASSERT_EQ(nullptr,     month_tree_.Search(1));
-  ASSERT_EQ("February",  month_tree_.Search(2)->value());
-  ASSERT_EQ("March",     month_tree_.Search(3)->value());
-  ASSERT_EQ(nullptr,     month_tree_.Search(4));
-  ASSERT_EQ("May",       month_tree_.Search(5)->value());
-  ASSERT_EQ("June",      month_tree_.Search(6)->value());
-  ASSERT_EQ(nullptr,     month_tree_.Search(7));
-  ASSERT_EQ("August",    month_tree_.Search(8)->value());
-  ASSERT_EQ("September", month_tree_.Search(9)->value());
-  ASSERT_EQ("October",   month_tree_.Search(10)->value());
-  ASSERT_EQ(nullptr,     month_tree_.Search(11));
-  ASSERT_EQ("December",  month_tree_.Search(12)->value());
+  ASSERT_FALSE(month_tree_.Search(1).has_value());
+  ASSERT_EQ("February",  month_tree_.Search(2).value());
+  ASSERT_EQ("March",     month_tree_.Search(3).value());
+  ASSERT_FALSE(month_tree_.Search(4).has_value());
+  ASSERT_EQ("May",       month_tree_.Search(5).value());
+  ASSERT_EQ("June",      month_tree_.Search(6).value());
+  ASSERT_FALSE(month_tree_.Search(7).has_value());
+  ASSERT_EQ("August",    month_tree_.Search(8).value());
+  ASSERT_EQ("September", month_tree_.Search(9).value());
+  ASSERT_EQ("October",   month_tree_.Search(10).value());
+  ASSERT_FALSE(month_tree_.Search(11).has_value());
+  ASSERT_EQ("December",  month_tree_.Search(12).value());
 }
 
 
 /**
  * Deletes 2 nodes from 5 nodes.
- * NOTE: target selection has not special meanings.
+ * NOTE: target selection has no special meanings.
  */
 TEST_F(AVLTreeTest, Delete_2) {
   tree_.Insert({5, 5});
@@ -217,7 +227,7 @@ TEST_F(AVLTreeTest, Delete_2) {
 }
 
 
-/** Inserts 1000 nodes and deletes all nultiple of 7. */
+/** Inserts 1000 nodes and deletes all multiple of 7. */
 TEST_F(AVLTreeTest, Delete_3) {
   for (int i = 0; i < 1000; ++i) {
     tree_.Insert({i, i});
