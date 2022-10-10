@@ -40,7 +40,10 @@ public:
     while (cur && key != cur->key()) {
       cur = key < cur->key() ? cur->left() : cur->right();
     }
-    return cur ? std::optional(cur->value()) : std::optional<V>();
+    if (!cur) {
+      return std::nullopt;
+    }
+    return cur->value();
   }
 
   /** In-order traversal. In ascending order with respect to keys. */
