@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <optional>
 #include <tuple>  /* tie */
 #include <utility>  /* pair */
 
@@ -19,7 +20,7 @@
  * by William Pugh in "Skip Lists: A Probabilistic Alternative to Balanced Trees".
  *
  * Implements the following operations:
- *  - SkipNode<K, V>* Find(const K& key) const
+ *  - std::optional<V> Find(const K& key) const
  *  - void Insert(const KeyValuePair<K, V>& key_value_pair)
  *  - void Delete(const K& key)
  *
@@ -54,10 +55,10 @@ public:
   }
 
   /**
-   * @brief Returns the node with `key` if found, otherwise `nullptr`.
+   * @brief Returns an optional object, contains the value of the node with `key` if found.
    * @complex O(lg(n)) w.h.p.
    */
-  SkipNode<K, V>* Find(const K& key) const {
+  std::optional<V> Find(const K& key) const {
     const SkipNode<K, V>* cur = header_;
 
     /* from top to down */
@@ -76,9 +77,9 @@ public:
      * doesn't exist.
      */
     if (!cur || cur->key() != key) {
-      return nullptr;
+      return std::nullopt;
     }
-    return const_cast<SkipNode<K, V>*>(cur);
+    return cur->value();
   }
 
   /**

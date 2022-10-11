@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <optional>
 #include <string>
 
 #include "../src/skip_list.hpp"
@@ -7,7 +8,7 @@
 
 class SkipListTest : public ::testing::Test {
 protected:
-  SkipList<int, std::string> list_ = SkipList<int, std::string>{};
+  SkipList<int, std::string> list_{};
 };
 
 
@@ -53,9 +54,9 @@ TEST_F(SkipListTest, InsertExistingKey) {
 
 /// Finds from an empty list, should get a null pointer.
 TEST_F(SkipListTest, FindEmptyList) {
-  auto* node = list_.Find(-100);
+  std::optional<std::string> node = list_.Find(-100);
 
-  ASSERT_TRUE(node == nullptr);
+  ASSERT_FALSE(node.has_value());
 }
 
 
@@ -63,11 +64,10 @@ TEST_F(SkipListTest, FindEmptyList) {
 TEST_F(SkipListTest, FindOnlyValueInList) {
   list_.Insert({1, "1"});
 
-  auto* node = list_.Find(1);
+  std::optional<std::string> value = list_.Find(1);
 
-  ASSERT_TRUE(node != nullptr);
-  ASSERT_EQ(1, node->key());
-  ASSERT_EQ("1", node->value());
+  ASSERT_TRUE(value);
+  ASSERT_EQ("1", *value);
 }
 
 
@@ -83,11 +83,10 @@ TEST_F(SkipListTest, FindValues) {
     19, 41, 16, 9, 14, 25, 18, 11, 21, 46, 4,
   };
   for (const int i : order) {
-    auto* node = list_.Find(i);
+    std::optional<std::string> value = list_.Find(i);
 
-    ASSERT_TRUE(node != nullptr);
-    ASSERT_EQ(i, node->key());
-    ASSERT_EQ(std::to_string(i), node->value());
+    ASSERT_TRUE(value);
+    ASSERT_EQ(std::to_string(i), *value);
   }
 }
 
@@ -102,11 +101,10 @@ TEST_F(SkipListTest, FindValuesNegativeTenToPositiveTen) {
     -10, 7, -9, -1, 3, 6, 0, 10, 1, -2, -6, 8, -4, 2, -3, 4, -5, 9, -7, -8, 5,
   };
   for (const int i : order) {
-    auto* node = list_.Find(i);
+    std::optional<std::string> value = list_.Find(i);
 
-    ASSERT_TRUE(node != nullptr);
-    ASSERT_EQ(i, node->key());
-    ASSERT_EQ(std::to_string(i), node->value());
+    ASSERT_TRUE(value);
+    ASSERT_EQ(std::to_string(i), *value);
   }
 }
 
@@ -125,11 +123,10 @@ TEST_F(SkipListTest, InsertExistingKeysToUpdateValues) {
   }
 
   for (int i = -10; i <= 10; ++i) {
-    auto* node = list_.Find(i);
+    std::optional<std::string> value = list_.Find(i);
 
-    ASSERT_TRUE(node != nullptr);
-    ASSERT_EQ(i, node->key());
-    ASSERT_EQ(std::to_string(i + 100), node->value());
+    ASSERT_TRUE(value);
+    ASSERT_EQ(std::to_string(i + 100), *value);
   }
 }
 
@@ -139,7 +136,7 @@ TEST_F(SkipListTest, DeleteOnlyValueInList) {
   list_.Insert({1, "1"});
 
   ASSERT_NO_THROW(list_.Delete(1));
-  ASSERT_TRUE(list_.Find(1) == nullptr);
+  ASSERT_FALSE(list_.Find(1));
 }
 
 
@@ -164,7 +161,7 @@ TEST_F(SkipListTest, DeleteValues) {
 
   /* find all */
   for (int i = 1; i <= 50; ++i) {
-    ASSERT_TRUE(list_.Find(i) == nullptr);
+    ASSERT_FALSE(list_.Find(i));
   }
 }
 
@@ -185,7 +182,7 @@ TEST_F(SkipListTest, DeleteValuesNegativeTenToPositiveTen) {
   });
 
   for (int i = -10; i <= 10; ++i) {
-    ASSERT_TRUE(list_.Find(i) == nullptr);
+    ASSERT_FALSE(list_.Find(i));
   }
 }
 
@@ -197,16 +194,15 @@ TEST_F(SkipListTest, InsertAndDeleteAlternately) {
       list_.Insert({i, std::to_string(i)});
     }
     for (int i = -10; i <= 10; ++i) {
-      auto* node = list_.Find(i);
-      ASSERT_TRUE(node != nullptr);
-      ASSERT_EQ(i, node->key());
-      ASSERT_EQ(std::to_string(i), node->value());
+      std::optional<std::string> value = list_.Find(i);
+      ASSERT_TRUE(value);
+      ASSERT_EQ(std::to_string(i), *value);
     }
     for (int i = -10; i <= 10; ++i) {
       list_.Delete(i);
     }
     for (int i = -10; i <= 10; ++i) {
-      ASSERT_TRUE(list_.Find(i) == nullptr);
+      ASSERT_FALSE(list_.Find(i));
     }
   }
 }
