@@ -157,6 +157,12 @@ public:
     }
   }
 
+private:
+  SkipNode<K, V>* header_ = new SkipNode<K, V>{{K{}, V{} /* default dummy value */}, MAX_LEVEL};
+
+  /// The level of the highest level node in the list.
+  int level_count_ = 1;  /* base level starts from 1. */
+
   /**
    * @brief Generates levels randomly from level 1; level i with probability (`LEVEL_UP_PROB` ^ i).
    * i.e., a fraction `LEVEL_UP_PROB` of the nodes with level i forward nodes
@@ -209,12 +215,6 @@ public:
       std::cout << '\n';
     }
   }
-
-private:
-  SkipNode<K, V>* header_ = new SkipNode<K, V>{{K{}, V{} /* default dummy value */}, MAX_LEVEL};
-
-  /// The level of the highest level node in the list.
-  int level_count_ = 1;  /* base level starts from 1. */
 };
 
 
