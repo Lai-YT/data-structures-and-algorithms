@@ -170,7 +170,7 @@ private:
    */
   int RandomLevel_() const {
     int level = 1;
-    while (level <= MAX_LEVEL && std::rand() < RAND_MAX * LEVEL_UP_PROB) {
+    while (level < MAX_LEVEL && std::rand() < RAND_MAX * LEVEL_UP_PROB) {
       ++level;
     }
     ASSERT(level <= MAX_LEVEL);

@@ -54,9 +54,9 @@ TEST_F(SkipListTest, InsertExistingKey) {
 
 /// Finds from an empty list, should get a null pointer.
 TEST_F(SkipListTest, FindEmptyList) {
-  std::optional<std::string> node = list_.Find(-100);
+  std::optional<std::string> value = list_.Find(-100);
 
-  ASSERT_FALSE(node.has_value());
+  ASSERT_FALSE(value);
 }
 
 
@@ -206,6 +206,20 @@ TEST_F(SkipListTest, InsertAndDeleteAlternately) {
     }
   }
 }
+
+
+/// UNSTABLE: Try to reach the MAX_LEVEL of the skip node.
+TEST_F(SkipListTest, MassiveInsertThenDelete) {
+  SkipList<int, bool> list{};
+
+  for (int i = 0; i <= 1000000; ++i) {
+    list.Insert({i, true});
+  }
+  for (int i = 0; i <= 1000000; ++i) {
+    list.Delete(i);
+  }
+}
+
 
 #ifdef MEM_DEBUG
 
