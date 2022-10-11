@@ -29,9 +29,9 @@ template<typename K, typename V>
 class SkipNode {
 public:
   /// A SkipNode has a `value` and knows its `level`.
-  SkipNode(const KeyValuePair<K, V>& key_value_pair, const int level)
-      : key_{key_value_pair.key},
-        value_{key_value_pair.value},
+  SkipNode(const KeyValuePair<K, V>& p, const int level)
+      : key_{p.key},
+        value_{p.value},
         level_{level},
         forwards_{new SkipNode<K, V>*[level]} {
     /* initialize forward nodes to nullptr */

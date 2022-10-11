@@ -23,17 +23,16 @@
  *  - void Insert(const KeyValuePair<K, V>& key_value_pair)
  *  - void Delete(const K& key)
  *
- * @note I could have use smart pointer and containers to make the resource
+ * @note I can use smart pointer and containers to make the resource
  * management easier and safer, but I decide to have things look pure since
- * we're now implementing the Skip List.
+ * we're focusing on how to implement the Skip List.
  */
 template<typename K, typename V>
 class SkipList {
 public:
   /**
    * @brief The probability that an inserted node be promoted.
-   * 50 percent are level 1, 25 percent are level 2,
-   * 12.5 percent are level 3 and so on.
+   * 50% being level 1, 25% being level 2, 12.5% being level 3 and so on.
    */
   static constexpr double LEVEL_UP_PROB = 0.5;
 
@@ -84,7 +83,7 @@ public:
 
   /**
    * @brief Inserts a new node of key-value pair into the list. If the `key` already
-   * exist, this method behaves as an Update method.
+   * exist, this method behaves as an "Update" method.
    * @complex O(lg(n)) w.h.p.
    */
   void Insert(const KeyValuePair<K, V>& key_value_pair) {
@@ -107,7 +106,7 @@ public:
     if (new_node->level() > level_count_) {
       for (int i = level_count_ + 1; i <= new_node->level(); ++i) {
         updates[i] = header_;
-        ASSERT(!updates[i]->forward(i));  /* should points to null since is a new level */
+        ASSERT(!updates[i]->forward(i));  /* should point to null since is a new level */
       }
       level_count_ = new_node->level();
     }
@@ -173,7 +172,7 @@ public:
 
   /**
    * @brief Returns the node with value just smaller than `value` and the way to the node.
-   * Rememebr to delete the way back pointer array after use, the caller takes the ownership.
+   * Rememebr to delete the way-back-pointer-array after use, the caller takes the ownership.
    * @complex O(lg(n)) w.h.p.
    */
   std::pair<SkipNode<K, V>*, SkipNode<K, V>**>
