@@ -19,7 +19,7 @@ class LevelRelationException : public std::runtime_error {
 
 template<typename K /* key */, typename V /* value */>
 struct KeyValuePair {
-  const K key;
+  K key;
   V value;
 };
 
@@ -100,12 +100,11 @@ public:
   }
 
 private:
-  /* only the value may be updated, key and level is fixed */
-  const K key_;
+  K key_;
   V value_;
-  const int level_;
+  int level_;
   /// The forward nodes pointed to in each level.
-  SkipNode<K ,V>** const forwards_;
+  SkipNode<K ,V>** forwards_;
 };
 
 #ifdef MEM_DEBUG
