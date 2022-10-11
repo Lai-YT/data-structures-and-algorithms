@@ -1,0 +1,26 @@
+name: Skip List
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: unit test
+    steps:
+    - name: Install gtest manually
+      run: |
+        sudo apt-get update
+        sudo apt-get install g++
+        sudo apt-get install make
+        sudo apt-get install libgtest-dev
+        sudo apt-get install cmake
+        cd /usr/src/gtest
+        sudo cmake CMakeLists.txt
+        sudo make
+        cd lib
+        sudo cp *.a /usr/lib
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Run tests
+      working-directory: ./skip_list
+      run: make test
