@@ -180,12 +180,14 @@ private:
   /**
    * @brief Returns the node with value just smaller than `value` and the way to the node.
    * Rememebr to delete the way-back-pointer-array after use, the caller takes the ownership.
+   * @note The level 1 node is placed at index 1 in the way array, this is to meet the
+   * convention used by SkipNode.
    * @complex O(lg(n)) w.h.p.
    */
   std::pair<SkipNode<K, V>*, SkipNode<K, V>**>
   FindNodeBeforeWithWayBack_(const K& key) const {
     /* record our way back to update the links */
-    auto** way = new SkipNode<K, V>*[MAX_LEVEL];
+    auto** way = new SkipNode<K, V>*[MAX_LEVEL + 1];
 
     /* do a search to find the node */
     SkipNode<K, V>* tar = header_;
