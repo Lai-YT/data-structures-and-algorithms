@@ -8,8 +8,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <optional>
-#include <tuple>  /* tie */
-#include <utility>  /* pair */
 
 #include "debug.hpp"
 #include "skip_node.hpp"
@@ -88,13 +86,13 @@ public:
    * @complex O(lg(n)) w.h.p.
    */
   void Insert(const KeyValuePair<K, V>& key_value_pair) {
-    SkipNode<K, V>** updates = nullptr;
-    SkipNode<K, V>* pos = nullptr;
-    std::tie(pos, updates) = FindNodeBeforeWithWayBack_(key_value_pair.key);
+    SkipNode<K, V>** updates = FindNodeBeforeWithWayBack_(key_value_pair.key);
+    SkipNode<K, V>* pos = updates[1];
 
-    /* already exist, update `value` */
-    if (pos != header_ && pos->key() == key_value_pair.key) {
-      pos->set_value(key_value_pair.value);
+    /* if the key already exist, update `value` */
+    SkipNode<K, V>* will_be = pos->forward(1);
+    if (will_be && will_be->key() == key_value_pair.key) {
+      will_be->set_value(key_value_pair.value);
       delete [] updates;
       updates = nullptr;
       return;
@@ -130,11 +128,9 @@ public:
    * @complex O(lg(n)) w.h.p.
    */
   void Delete(const K& key) {
-    SkipNode<K, V>** updates = nullptr;
-    SkipNode<K, V>* tar = nullptr;
-    std::tie(tar, updates) = FindNodeBeforeWithWayBack_(key);
+    SkipNode<K, V>** updates = FindNodeBeforeWithWayBack_(key);
+    SkipNode<K, V>* tar = updates[1]->forward(1);
 
-    tar = tar->forward(1);  /* this is now the target node */
     if (!tar || tar->key() != key) {
       /* key not found */
       delete [] updates;
@@ -178,14 +174,13 @@ private:
   }
 
   /**
-   * @brief Returns the node with value just smaller than `value` and the way to the node.
+   * @brief Returns the way to the node with value "just smaller" than `value`.
    * Rememebr to delete the way-back-pointer-array after use, the caller takes the ownership.
    * @note The level 1 node is placed at index 1 in the way array, this is to meet the
    * convention used by SkipNode.
    * @complex O(lg(n)) w.h.p.
    */
-  std::pair<SkipNode<K, V>*, SkipNode<K, V>**>
-  FindNodeBeforeWithWayBack_(const K& key) const {
+  SkipNode<K, V>** FindNodeBeforeWithWayBack_(const K& key) const {
     /* record our way back to update the links */
     auto** way = new SkipNode<K, V>*[MAX_LEVEL + 1];
 
@@ -199,7 +194,7 @@ private:
       way[i] = tar;
     }
     ASSERT(tar == header_ || tar->key() < key);  /* stop before the exact value */
-    return std::make_pair(tar, way);
+    return way;
   }
 
   /**
