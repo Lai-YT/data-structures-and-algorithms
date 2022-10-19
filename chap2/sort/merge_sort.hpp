@@ -11,8 +11,10 @@
 //             such as range copy.
 //             (2) Use closed-open interval, as the convention.
 
+using Index = int;
+
 std::vector<int> CopySubVector(
-    const std::vector<int>& v, const size_t begin_index, const size_t end_index) {
+    const std::vector<int>& v, const Index begin_index, const Index end_index) {
   std::vector<int> copy(end_index - begin_index);
   for (size_t i = begin_index; i < end_index; ++i) {
     copy[i - begin_index] = v[i];
@@ -20,43 +22,43 @@ std::vector<int> CopySubVector(
   return copy;
 }
 
-void Merge(std::vector<int>& v, const size_t head, const size_t mid, const size_t tail) {
-  const std::vector<int> left  = CopySubVector(v, head, mid);
-  const std::vector<int> right = CopySubVector(v, mid, tail);
+void Merge(std::vector<int>& v, const Index head, const Index mid, const Index tail) {
+  const std::vector<int> left_portion  = CopySubVector(v, head, mid);
+  const std::vector<int> right_portion = CopySubVector(v, mid, tail);
 
-  int left_index  = 0;
-  int right_index = 0;
-  int v_index     = head;
-  while (left_index != left.size() && right_index != right.size()) {
+  Index left  = 0;
+  Index right = 0;
+  Index curr  = head;
+  while (left != left_portion.size() && right != right_portion.size()) {
     // put the smaller one back
-    if (left[left_index] <= right[right_index]) {
-      v[v_index] = left[left_index];
-      ++left_index;
+    if (left_portion[left] <= right_portion[right]) {
+      v[curr] = left_portion[left];
+      ++left;
     } else {
-      v[v_index] = right[right_index];
-      ++right_index;
+      v[curr] = right_portion[right];
+      ++right;
     }
-    ++v_index;
+    ++curr;
   }
 
   // put all remaining elements back
-  while (left_index != left.size()) {
-    v[v_index] = left[left_index];
-    ++left_index;
-    ++v_index;
+  while (left != left_portion.size()) {
+    v[curr] = left_portion[left];
+    ++left;
+    ++curr;
   }
-  while (right_index != right.size()) {
-    v[v_index] = right[right_index];
-    ++right_index;
-    ++v_index;
+  while (right != right_portion.size()) {
+    v[curr] = right_portion[right];
+    ++right;
+    ++curr;
   }
 }  // end Merge
 
-void MergeSort(std::vector<int>& v, const size_t head, const size_t tail) {
+void MergeSort(std::vector<int>& v, const Index head, const Index tail) {
   if (tail - head <= 1) {
     return;
   }
-  const size_t mid = (head + tail) / 2;
+  const Index mid = (head + tail) / 2;
   MergeSort(v, head, mid);
   MergeSort(v, mid, tail);
   Merge(v, head, mid, tail);
