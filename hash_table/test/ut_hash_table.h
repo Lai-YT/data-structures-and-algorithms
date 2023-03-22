@@ -38,6 +38,20 @@ void test_delete() {
   ht_free_hash_table(ht);
 }
 
+void test_update_with_insert() {
+  ht_hash_table_t* ht = ht_new_hash_table();
+  int key = 5;
+  char* old_val = "old";
+  char* new_val = "new";
+
+  ht_insert(ht, key, old_val);
+  ht_insert(ht, key, new_val);
+
+  ASSERT_EQ(ht_search(ht, key), new_val);
+
+  ht_free_hash_table(ht);
+}
+
 /// @brief Inserts enough many key-values and the capacity of the hash table
 /// should grow.
 void test_resize_double_up() {
