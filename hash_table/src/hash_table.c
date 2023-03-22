@@ -107,8 +107,8 @@ void ht_resize_hash_table(ht_hash_table_t* old, size_t capacity) {
   }
   // 1. Create a new hash table with the new capacity
   // 2. Insert the items of the old table into the new table
-  // 3. Free the old items
-  // 4. Point to the new table
+  // 3. Point to the new table
+  // 4. Free the old items
 
   // 1.
   ht_hash_table_t* new = ht_new_hash_table_with_capacity(capacity);
@@ -122,9 +122,11 @@ void ht_resize_hash_table(ht_hash_table_t* old, size_t capacity) {
   }
 
   // 3.
-  free(old->items);
+  ht_hash_table_t ht_to_free = *old;
   *old = *new;
 
   // 4.
-  free(new);
+  *new = ht_to_free;
+  // free the items from old and the table itself from new
+  ht_free_hash_table(new);
 }
