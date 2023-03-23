@@ -4,18 +4,12 @@
 #include <stddef.h>
 
 #ifndef HT_BASE_CAPACITY
+/// @brief Define before including this file if you want to use another base
+/// capacity. The actual capacity will be the closest prime.
 #define HT_BASE_CAPACITY 53
 #endif
 
-typedef struct ht_item {
-  int key;
-  void* val;
-} ht_item_t;
-
-ht_item_t* ht_new_item(int key, void* val);
-
-/// @note The val in the item is not freed.
-void ht_free_item(ht_item_t* item);
+typedef struct ht_item ht_item_t;
 
 typedef struct ht_hash_table {
   size_t capacity;
@@ -23,7 +17,10 @@ typedef struct ht_hash_table {
   ht_item_t** items;
 } ht_hash_table_t;
 
+/// @note Should be freed after use with ht_free_hash_table.
 ht_hash_table_t* ht_new_hash_table();
+
+/// @note Frees the hash table created previously with ht_new_hash_table.
 void ht_free_hash_table(ht_hash_table_t*);
 
 /// @brief Inserts the key-val pair into the hash table. val is updated if key
@@ -32,15 +29,12 @@ void ht_free_hash_table(ht_hash_table_t*);
 /// not take the ownership. If val is heap allocated, the caller has to free it
 /// manually.
 void ht_insert(ht_hash_table_t* ht, int key, void* val);
+
+/// @return The val mapped by key; NULL if not exists.
 void* ht_search(ht_hash_table_t*, int key);
+
+/// @brief Deletes the key and its val from the table if the key exists.
+/// @note The val is not freed since its ownership isn't taken.
 void ht_delete(ht_hash_table_t*, int key);
-
-int ht_hash1(int n, int prime);
-
-/// @note Does not yield 0.
-int ht_hash2(int n, int prime);
-int ht_get_hashed_key(int key, size_t ht_capacity, int attempt);
-
-void ht_resize_hash_table(ht_hash_table_t*, size_t capacity);
 
 #endif /* end of include guard: HASH_TABLE_H */
