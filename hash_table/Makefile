@@ -1,4 +1,4 @@
-.PHONY: fmt clean
+.PHONY: valgrind fmt clean help
 
 #Color definition for print purpose
 COLOR_PREFIX := e
@@ -12,6 +12,7 @@ LOGDIR := log
 LIBDIR := lib
 TESTDIR := test
 
+
 BINARY := main
 TEST_BINARY := ut_$(BINARY)
 
@@ -20,17 +21,31 @@ STD := -std=gnu99
 WARNS := -Wall -Wextra -pedantic
 CFLAGS := -O3 $(STD) $(WARNS)
 DEBUG := -g3 -DDEBUG=1
+# Dependency libraries
+LIBS := -lm
+# Test libraries
+TEST_LIBS :=
 
 SRCEXT := c
 #%.o file names
 NAMES := $(notdir $(basename $(wildcard $(SRCDIR)/*.$(SRCEXT))))
 OBJECTS := $(patsubst %,$(LIBDIR)/%.o,$(NAMES))
 
-# Dependency libraries
-LIBS := -lm
+default: all
 
-# Test libraries
-TEST_LIBS :=
+DESCRIPTION := An open-addressed, double hashed hash table in C.
+# Help message
+help:
+	@echo "$(YELLOW)Hash Table$(END_COLOR)"
+	@echo "    $(DESCRIPTION)"
+	@echo
+	@echo "Target rules:"
+	@echo "    all      - Compiles and generates binary file"
+	@echo "    tests    - Compiles and runs tests binary file"
+	@echo "    valgrind - Runs test binary file using valgrind tool"
+	@echo "    fmt      - Formats the source and test files"
+	@echo "    clean    - Cleans the project by removing binaries"
+	@echo "    help     - Prints a help message with target rules"
 
 # Rule for link and generate the binary file
 all: $(OBJECTS)
