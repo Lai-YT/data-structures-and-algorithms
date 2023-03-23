@@ -108,7 +108,7 @@ static bool ht_is_low_load(ht_hash_table_t* ht) {
 }
 
 /// @note If the capacity is lower than HT_BASE_CAPACITY, HT_BASE_CAPACITY is
-/// used; if the capacity is not a prime number, the closet larger prime number
+/// used; if the capacity is not a prime number, the greater closet prime number
 /// is used.
 static void ht_resize_hash_table(ht_hash_table_t* old, size_t capacity);
 

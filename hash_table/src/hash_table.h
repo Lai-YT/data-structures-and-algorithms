@@ -5,7 +5,7 @@
 
 #ifndef HT_BASE_CAPACITY
 /// @brief Define before including this file if you want to use another base
-/// capacity. The actual capacity will be the closest prime.
+/// capacity. The actual capacity will be the greater closest prime.
 #define HT_BASE_CAPACITY 53
 #endif
 

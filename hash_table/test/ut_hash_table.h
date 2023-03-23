@@ -3,6 +3,7 @@
 #include "../src/hash_table.h"
 #include "assertion.h"
 
+/// @brief Inserts some key-vals. They should be stored into the hash table.
 void test_insert_and_search() {
   ht_hash_table_t* ht = ht_new_hash_table();
   int keys[] = {9, 100, 217};
@@ -21,6 +22,8 @@ void test_insert_and_search() {
   ht_free_hash_table(ht);
 }
 
+/// @brief Deletes a key. Its val should be removed without breaking other
+/// keys.
 void test_delete() {
   ht_hash_table_t* ht = ht_new_hash_table();
   int keys[] = {9, 100, 217};
@@ -38,6 +41,8 @@ void test_delete() {
   ht_free_hash_table(ht);
 }
 
+/// @brief Inserts a val with an already existed key. The val of that key
+/// should be updated with the new val.
 void test_update_with_insert() {
   ht_hash_table_t* ht = ht_new_hash_table();
   int key = 5;
@@ -52,7 +57,7 @@ void test_update_with_insert() {
   ht_free_hash_table(ht);
 }
 
-/// @brief Inserts enough many key-values and the capacity of the hash table
+/// @brief Inserts enough many key-values, The capacity of the hash table
 /// should grow.
 void test_resize_double_up() {
   ht_hash_table_t* ht = ht_new_hash_table();
